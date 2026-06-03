@@ -21,4 +21,21 @@ abstract final class BrDates {
   /// e.g. `12 MAR` — day + uppercase month abbreviation.
   static String dayMonth(DateTime date) =>
       '${date.day} ${_monthsAbbrev[date.month - 1].toUpperCase()}';
+
+  /// Coarse pt-BR relative time used by the reviews list (e.g. `há 3 dias`,
+  /// `há 1 semana`). [now] is injectable so the output is testable.
+  static String relative(DateTime date, {DateTime? now}) {
+    final reference = now ?? DateTime.now();
+    final days = reference.difference(date).inDays;
+
+    if (days <= 0) return 'hoje';
+    if (days == 1) return 'há 1 dia';
+    if (days < 7) return 'há $days dias';
+    if (days < 14) return 'há 1 semana';
+    if (days < 30) return 'há ${days ~/ 7} semanas';
+    if (days < 60) return 'há 1 mês';
+    if (days < 365) return 'há ${days ~/ 30} meses';
+    if (days < 730) return 'há 1 ano';
+    return 'há ${days ~/ 365} anos';
+  }
 }

@@ -16,6 +16,7 @@ import '../../../core/utils/br_dates.dart';
 import '../../../domain/entities/origin_lot.dart';
 import '../../../domain/entities/producer.dart';
 import '../../../domain/entities/product.dart';
+import '../../reviews/controllers/reviews_controller.dart';
 import '../controllers/product_detail_controller.dart';
 import '../widgets/origin_map_stub.dart';
 import '../widgets/origin_timeline.dart';
@@ -179,15 +180,33 @@ class _Header extends StatelessWidget {
         const SizedBox(height: 6),
         Text(product.name, style: AppTypography.title(AppColors.text)),
         const SizedBox(height: AppSpacing.md),
-        Row(
-          children: [
-            RatingLabel(product.rating),
-            const SizedBox(width: AppSpacing.sm),
-            Text(
-              '${product.reviewCount} avaliações',
-              style: AppTypography.meta(AppColors.text2),
+        InkWell(
+          onTap: () => Get.toNamed(
+            AppRoutes.reviews,
+            arguments: ReviewsArgs(
+              productId: product.id,
+              productName: product.name,
+              aggregateRating: product.rating,
+              aggregateCount: product.reviewCount,
             ),
-          ],
+          ),
+          borderRadius: AppRadii.brSm,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                RatingLabel(product.rating),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  '${product.reviewCount} avaliações',
+                  style: AppTypography.meta(AppColors.text2),
+                ),
+                const SizedBox(width: 2),
+                const Icon(Icons.chevron_right_rounded,
+                    size: 18, color: AppColors.text3),
+              ],
+            ),
+          ),
         ),
       ],
     );

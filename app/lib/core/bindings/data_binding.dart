@@ -10,6 +10,8 @@ import '../../data/datasources/user_remote_data_source.dart';
 import '../../data/repositories/in_memory_origin_lot_repository.dart';
 import '../../data/repositories/in_memory_producer_repository.dart';
 import '../../data/repositories/in_memory_product_repository.dart';
+import '../../data/repositories/in_memory_review_repository.dart';
+import '../../data/repositories/in_memory_user_repository.dart';
 import '../../data/repositories/origin_lot_repository_impl.dart';
 import '../../data/repositories/producer_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
@@ -74,6 +76,8 @@ class DataBinding extends Bindings {
           fenix: true);
       Get.lazyPut<OriginLotRepository>(InMemoryOriginLotRepository.new,
           fenix: true);
+      Get.lazyPut<ReviewRepository>(InMemoryReviewRepository.new, fenix: true);
+      Get.lazyPut<UserRepository>(InMemoryUserRepository.new, fenix: true);
     } else {
       Get.lazyPut<ProductRepository>(
         () => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()),
@@ -87,15 +91,15 @@ class DataBinding extends Bindings {
         () => OriginLotRepositoryImpl(Get.find<OriginLotRemoteDataSource>()),
         fenix: true,
       );
+      Get.lazyPut<ReviewRepository>(
+        () => ReviewRepositoryImpl(Get.find<ReviewRemoteDataSource>()),
+        fenix: true,
+      );
+      Get.lazyPut<UserRepository>(
+        () => UserRepositoryImpl(Get.find<UserRemoteDataSource>()),
+        fenix: true,
+      );
     }
-    Get.lazyPut<ReviewRepository>(
-      () => ReviewRepositoryImpl(Get.find<ReviewRemoteDataSource>()),
-      fenix: true,
-    );
-    Get.lazyPut<UserRepository>(
-      () => UserRepositoryImpl(Get.find<UserRemoteDataSource>()),
-      fenix: true,
-    );
     Get.lazyPut<SubscriptionRepository>(
       () => SubscriptionRepositoryImpl(Get.find<SubscriptionRemoteDataSource>()),
       fenix: true,

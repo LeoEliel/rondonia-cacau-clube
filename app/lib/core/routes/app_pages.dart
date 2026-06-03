@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 
+import '../../presentation/producer/bindings/producer_profile_binding.dart';
+import '../../presentation/producer/pages/producer_profile_page.dart';
 import '../../presentation/product_detail/bindings/product_detail_binding.dart';
 import '../../presentation/product_detail/pages/product_detail_page.dart';
+import '../../presentation/reviews/bindings/reviews_binding.dart';
+import '../../presentation/reviews/pages/reviews_page.dart';
 import '../../presentation/shell/bindings/shell_binding.dart';
 import '../../presentation/shell/pages/shell_page.dart';
 import 'app_routes.dart';
@@ -25,7 +29,17 @@ abstract final class AppPages {
       page: () => const ProductDetailPage(),
       binding: ProductDetailBinding(),
     ),
-    // Remaining feature routes (onboarding, login, producer, club, reviews)
-    // are registered here in the following milestones.
+    GetPage(
+      name: AppRoutes.producer,
+      page: () => const ProducerProfilePage(),
+      binding: ProducerProfileBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.reviews,
+      page: () => const ReviewsPage(),
+      binding: ReviewsBinding(),
+    ),
+    // Remaining feature routes (onboarding, login, club) are registered here in
+    // the following milestones.
   ];
 }
