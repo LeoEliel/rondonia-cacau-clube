@@ -1,0 +1,13 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Logs
+*.log
+
+# Node (not used, but guard against tooling)
+node_modules/
+
+# The Flutter app keeps its own .gitignore in app/ for build artifacts.
