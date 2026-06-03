@@ -9,9 +9,12 @@ abstract final class AppRoutes {
   // Implemented in Milestone 1
   static const String shell = '/';
 
-  // Planned (later milestones)
+  // Auth flow (Milestone 5)
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String signup = '/signup';
+
+  // Planned (later milestones)
   static const String home = '/home';
   static const String search = '/search';
   static const String productDetail = '/product';

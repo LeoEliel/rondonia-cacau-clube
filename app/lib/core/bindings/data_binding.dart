@@ -7,6 +7,8 @@ import '../../data/datasources/product_remote_data_source.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../../data/datasources/subscription_remote_data_source.dart';
 import '../../data/datasources/user_remote_data_source.dart';
+import '../../data/repositories/demo_auth_repository.dart';
+import '../../data/repositories/firebase_auth_repository.dart';
 import '../../data/repositories/in_memory_origin_lot_repository.dart';
 import '../../data/repositories/in_memory_producer_repository.dart';
 import '../../data/repositories/in_memory_product_repository.dart';
@@ -18,6 +20,7 @@ import '../../data/repositories/product_repository_impl.dart';
 import '../../data/repositories/review_repository_impl.dart';
 import '../../data/repositories/subscription_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/origin_lot_repository.dart';
 import '../../domain/repositories/producer_repository.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -26,6 +29,7 @@ import '../../domain/repositories/subscription_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/add_review.dart';
 import '../../domain/usecases/follow_producer.dart';
+import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/get_origin_lot.dart';
 import '../../domain/usecases/get_producer_by_id.dart';
 import '../../domain/usecases/get_producers.dart';
@@ -36,6 +40,10 @@ import '../../domain/usecases/get_products_by_producer.dart';
 import '../../domain/usecases/get_subscription.dart';
 import '../../domain/usecases/get_user.dart';
 import '../../domain/usecases/set_subscription_tier.dart';
+import '../../domain/usecases/sign_in_with_email.dart';
+import '../../domain/usecases/sign_in_with_google.dart';
+import '../../domain/usecases/sign_out.dart';
+import '../../domain/usecases/sign_up_with_email.dart';
 import '../../domain/usecases/unfollow_producer.dart';
 
 /// Wires the data graph: Firestore → data sources → repository implementations
@@ -78,6 +86,7 @@ class DataBinding extends Bindings {
           fenix: true);
       Get.lazyPut<ReviewRepository>(InMemoryReviewRepository.new, fenix: true);
       Get.lazyPut<UserRepository>(InMemoryUserRepository.new, fenix: true);
+      Get.lazyPut<AuthRepository>(DemoAuthRepository.new, fenix: true);
     } else {
       Get.lazyPut<ProductRepository>(
         () => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()),
@@ -99,6 +108,7 @@ class DataBinding extends Bindings {
         () => UserRepositoryImpl(Get.find<UserRemoteDataSource>()),
         fenix: true,
       );
+      Get.lazyPut<AuthRepository>(FirebaseAuthRepository.new, fenix: true);
     }
     Get.lazyPut<SubscriptionRepository>(
       () => SubscriptionRepositoryImpl(Get.find<SubscriptionRemoteDataSource>()),
@@ -119,5 +129,10 @@ class DataBinding extends Bindings {
     Get.lazyPut(() => UnfollowProducer(Get.find()), fenix: true);
     Get.lazyPut(() => GetSubscription(Get.find()), fenix: true);
     Get.lazyPut(() => SetSubscriptionTier(Get.find()), fenix: true);
+    Get.lazyPut(() => GetCurrentUser(Get.find()), fenix: true);
+    Get.lazyPut(() => SignInWithEmail(Get.find()), fenix: true);
+    Get.lazyPut(() => SignUpWithEmail(Get.find()), fenix: true);
+    Get.lazyPut(() => SignInWithGoogle(Get.find()), fenix: true);
+    Get.lazyPut(() => SignOut(Get.find()), fenix: true);
   }
 }

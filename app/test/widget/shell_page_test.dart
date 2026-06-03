@@ -1,7 +1,13 @@
 import 'package:app/core/controllers/theme_controller.dart';
+import 'package:app/core/session/session_controller.dart';
 import 'package:app/core/theme/app_theme.dart';
+import 'package:app/domain/usecases/follow_producer.dart';
+import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_producers.dart';
 import 'package:app/domain/usecases/get_products.dart';
+import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/sign_out.dart';
+import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/club/controllers/club_controller.dart';
 import 'package:app/presentation/home/controllers/home_controller.dart';
 import 'package:app/presentation/profile/controllers/profile_controller.dart';
@@ -23,7 +29,18 @@ void main() {
     prefs = await SharedPreferences.getInstance();
     Get.testMode = true;
     Get.put<SharedPreferences>(prefs, permanent: true);
-    Get.put<ThemeController>(ThemeController(prefs), permanent: true);
+    final themeController = ThemeController(prefs);
+    Get.put<ThemeController>(themeController, permanent: true);
+    final authRepo = FakeAuthRepository();
+    final userRepo = FakeUserRepository();
+    final session = SessionController(
+      GetCurrentUser(authRepo),
+      GetUser(userRepo),
+      SignOut(authRepo),
+      FollowProducer(userRepo),
+      UnfollowProducer(userRepo),
+    );
+    Get.put<SessionController>(session, permanent: true);
     Get.put<ShellController>(ShellController());
     Get.put<HomeController>(HomeController(
       GetProducts(FakeProductRepository()),
@@ -34,7 +51,7 @@ void main() {
       GetProducers(FakeProducerRepository()),
     ));
     Get.put<ClubController>(ClubController());
-    Get.put<ProfileController>(ProfileController());
+    Get.put<ProfileController>(ProfileController(session, themeController));
   });
 
   tearDown(Get.reset);

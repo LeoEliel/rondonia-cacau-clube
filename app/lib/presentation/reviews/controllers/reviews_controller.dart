@@ -98,10 +98,13 @@ class ReviewsController extends GetxController {
   /// Submits a review for the current draft rating + [text]. Returns `null` on
   /// success or a user-facing error message to surface in the UI.
   Future<String?> submit(String text) async {
+    final userId = _session.currentUserId;
+    if (userId == null) return 'Entre na sua conta para avaliar.';
+
     submitting.value = true;
     final result = await _addReview(AddReviewParams(
       productId: args.productId,
-      userId: _session.currentUserId,
+      userId: userId,
       rating: draftRating.value,
       text: text,
       userName: _session.currentUserName,

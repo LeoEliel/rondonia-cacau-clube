@@ -4,8 +4,10 @@ import 'package:app/domain/core/result.dart';
 import 'package:app/domain/entities/review.dart';
 import 'package:app/domain/usecases/add_review.dart';
 import 'package:app/domain/usecases/follow_producer.dart';
+import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_product_reviews.dart';
 import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/sign_out.dart';
 import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/reviews/controllers/reviews_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,12 +27,16 @@ Future<({ReviewsController controller, FakeReviewRepository reviewRepo})> _build
   Result<Review>? addResult,
 }) async {
   final userRepo = FakeUserRepository()..userResult = success(Samples.user());
+  final authRepo = FakeAuthRepository()
+    ..currentUserResult = success(Samples.user());
   final session = SessionController(
+    GetCurrentUser(authRepo),
     GetUser(userRepo),
+    SignOut(authRepo),
     FollowProducer(userRepo),
     UnfollowProducer(userRepo),
   );
-  await session.load();
+  await session.restore();
 
   final reviewRepo = FakeReviewRepository()
     ..reviewsResult = reviewsResult ?? success([Samples.review()])

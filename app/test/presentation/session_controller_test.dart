@@ -3,60 +3,124 @@ import 'package:app/domain/core/failure.dart';
 import 'package:app/domain/core/result.dart';
 import 'package:app/domain/entities/user.dart';
 import 'package:app/domain/usecases/follow_producer.dart';
+import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/sign_out.dart';
 import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/fake_repositories.dart';
 import '../helpers/samples.dart';
 
-({SessionController controller, FakeUserRepository userRepo}) _build({
-  Result<User>? userResult,
+({
+  SessionController controller,
+  FakeAuthRepository authRepo,
+  FakeUserRepository userRepo,
+}) _build({
+  Result<User?>? currentUserResult,
+  Result<User>? profileResult,
   Result<Unit>? followResult,
   Result<Unit>? unfollowResult,
 }) {
+  final authRepo = FakeAuthRepository()
+    ..currentUserResult = currentUserResult ?? success(null);
   final userRepo = FakeUserRepository()
-    ..userResult = userResult ?? success(Samples.user())
+    ..userResult = profileResult ?? success(Samples.user())
     ..followResult = followResult ?? success(unit)
     ..unfollowResult = unfollowResult ?? success(unit);
 
   return (
     controller: SessionController(
+      GetCurrentUser(authRepo),
       GetUser(userRepo),
+      SignOut(authRepo),
       FollowProducer(userRepo),
       UnfollowProducer(userRepo),
     ),
+    authRepo: authRepo,
     userRepo: userRepo,
   );
 }
 
 void main() {
-  group('SessionController.load', () {
-    test('seeds the following set from the loaded user', () async {
-      final f = _build();
+  group('SessionController.restore', () {
+    test('adopts a persisted user and seeds the following set', () async {
+      final f = _build(currentUserResult: success(Samples.user()));
 
-      await f.controller.load();
+      await f.controller.restore();
 
+      expect(f.controller.isAuthenticated, isTrue);
       expect(f.controller.currentUserId, 'user_ana');
       expect(f.controller.isFollowing('prod_1'), isTrue);
       expect(f.controller.isFollowing('prod_other'), isFalse);
     });
 
-    test('falls back to the demo id and empty set when the user is missing',
-        () async {
-      final f = _build(userResult: failure(const NotFoundFailure()));
+    test('stays anonymous when there is no persisted session', () async {
+      final f = _build(currentUserResult: success(null));
 
-      await f.controller.load();
+      await f.controller.restore();
 
-      expect(f.controller.currentUserId, 'user_ana');
+      expect(f.controller.isAuthenticated, isFalse);
+      expect(f.controller.currentUserId, isNull);
+      expect(f.controller.following, isEmpty);
+    });
+  });
+
+  group('SessionController.completeSignIn', () {
+    test('adopts the auth user and hydrates the richer profile', () async {
+      final f = _build(
+        profileResult: success(Samples.user()),
+      );
+
+      await f.controller.completeSignIn(
+        User(
+          uid: 'user_ana',
+          name: 'Ana',
+          email: 'ana@example.com',
+          createdAt: DateTime(2024),
+        ),
+      );
+
+      expect(f.controller.isAuthenticated, isTrue);
+      // Hydrated profile carries the paid tier + seeded following set.
+      expect(f.controller.isClubMember, isTrue);
+      expect(f.controller.isFollowing('prod_1'), isTrue);
+    });
+
+    test('keeps the auth user when no persisted profile exists', () async {
+      final f = _build(profileResult: failure(const NotFoundFailure()));
+
+      await f.controller.completeSignIn(
+        User(
+          uid: 'user_new',
+          name: 'Novo',
+          email: 'novo@example.com',
+          createdAt: DateTime(2024),
+        ),
+      );
+
+      expect(f.controller.currentUserId, 'user_new');
+      expect(f.controller.isClubMember, isFalse);
+    });
+  });
+
+  group('SessionController.signOut', () {
+    test('clears identity and follow state', () async {
+      final f = _build(currentUserResult: success(Samples.user()));
+      await f.controller.restore();
+
+      await f.controller.signOut();
+
+      expect(f.authRepo.didSignOut, isTrue);
+      expect(f.controller.isAuthenticated, isFalse);
       expect(f.controller.following, isEmpty);
     });
   });
 
   group('SessionController.toggleFollow', () {
     test('follows optimistically and persists on success', () async {
-      final f = _build();
-      await f.controller.load();
+      final f = _build(currentUserResult: success(Samples.user()));
+      await f.controller.restore();
 
       await f.controller.toggleFollow('prod_new');
 
@@ -65,9 +129,22 @@ void main() {
       expect(f.userRepo.lastFollowUid, 'user_ana');
     });
 
+    test('does nothing when anonymous', () async {
+      final f = _build(currentUserResult: success(null));
+      await f.controller.restore();
+
+      await f.controller.toggleFollow('prod_new');
+
+      expect(f.controller.isFollowing('prod_new'), isFalse);
+      expect(f.userRepo.lastFollowProducerId, isNull);
+    });
+
     test('rolls back the follow when the write fails', () async {
-      final f = _build(followResult: failure(const ServerFailure()));
-      await f.controller.load();
+      final f = _build(
+        currentUserResult: success(Samples.user()),
+        followResult: failure(const ServerFailure()),
+      );
+      await f.controller.restore();
 
       await f.controller.toggleFollow('prod_new');
 
@@ -75,8 +152,8 @@ void main() {
     });
 
     test('unfollows an already-followed producer', () async {
-      final f = _build();
-      await f.controller.load();
+      final f = _build(currentUserResult: success(Samples.user()));
+      await f.controller.restore();
 
       await f.controller.toggleFollow('prod_1');
 
@@ -85,8 +162,11 @@ void main() {
     });
 
     test('rolls back the unfollow when the write fails', () async {
-      final f = _build(unfollowResult: failure(const ServerFailure()));
-      await f.controller.load();
+      final f = _build(
+        currentUserResult: success(Samples.user()),
+        unfollowResult: failure(const ServerFailure()),
+      );
+      await f.controller.restore();
 
       await f.controller.toggleFollow('prod_1');
 

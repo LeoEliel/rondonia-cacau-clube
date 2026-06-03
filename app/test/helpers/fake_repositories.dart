@@ -8,6 +8,7 @@ import 'package:app/domain/entities/origin_lot.dart';
 import 'package:app/domain/entities/review.dart';
 import 'package:app/domain/entities/subscription.dart';
 import 'package:app/domain/entities/user.dart';
+import 'package:app/domain/repositories/auth_repository.dart';
 import 'package:app/domain/repositories/origin_lot_repository.dart';
 import 'package:app/domain/repositories/producer_repository.dart';
 import 'package:app/domain/repositories/product_repository.dart';
@@ -126,6 +127,57 @@ class FakeUserRepository implements UserRepository {
   }) async {
     lastUnfollowProducerId = producerId;
     return unfollowResult;
+  }
+}
+
+class FakeAuthRepository implements AuthRepository {
+  Result<User?> currentUserResult = success(null);
+  Result<User> signInResult = failure(const AuthFailure());
+  Result<User> signUpResult = failure(const AuthFailure());
+  Result<User> googleResult = failure(const AuthFailure());
+  Result<Unit> signOutResult = success(unit);
+
+  String? lastEmail;
+  String? lastPassword;
+  String? lastName;
+  bool didSignOut = false;
+  bool didGoogle = false;
+
+  @override
+  Future<Result<User?>> currentUser() async => currentUserResult;
+
+  @override
+  Future<Result<User>> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    lastEmail = email;
+    lastPassword = password;
+    return signInResult;
+  }
+
+  @override
+  Future<Result<User>> signUpWithEmail({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    lastName = name;
+    lastEmail = email;
+    lastPassword = password;
+    return signUpResult;
+  }
+
+  @override
+  Future<Result<User>> signInWithGoogle() async {
+    didGoogle = true;
+    return googleResult;
+  }
+
+  @override
+  Future<Result<Unit>> signOut() async {
+    didSignOut = true;
+    return signOutResult;
   }
 }
 

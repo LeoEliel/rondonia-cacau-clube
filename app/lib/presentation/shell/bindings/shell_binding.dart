@@ -22,6 +22,8 @@ class ShellBinding extends Bindings {
       () => SearchTabController(Get.find(), Get.find()),
     );
     Get.lazyPut<ClubController>(ClubController.new);
-    Get.lazyPut<ProfileController>(ProfileController.new);
+    Get.lazyPut<ProfileController>(
+      () => ProfileController(Get.find(), Get.find()),
+    );
   }
 }

@@ -23,10 +23,16 @@ class InitialBinding extends Bindings {
     // cases) so feature bindings can resolve use cases on demand.
     DataBinding().dependencies();
 
-    // Current-user state (follow + reviews identity). Permanent so the followed
-    // set survives across route changes. Auth replaces the demo identity in M5.
+    // Current-user state (auth identity + follow set). Permanent so identity
+    // survives across route changes; it restores any existing session on init.
     Get.put<SessionController>(
-      SessionController(Get.find(), Get.find(), Get.find()),
+      SessionController(
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+      ),
       permanent: true,
     );
   }

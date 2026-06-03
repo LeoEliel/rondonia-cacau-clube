@@ -4,9 +4,11 @@ import 'package:app/domain/core/result.dart';
 import 'package:app/domain/entities/producer.dart';
 import 'package:app/domain/entities/product.dart';
 import 'package:app/domain/usecases/follow_producer.dart';
+import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_producer_by_id.dart';
 import 'package:app/domain/usecases/get_products_by_producer.dart';
 import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/sign_out.dart';
 import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/producer/controllers/producer_profile_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,12 +17,16 @@ import '../helpers/fake_repositories.dart';
 import '../helpers/samples.dart';
 
 Future<SessionController> _session(FakeUserRepository userRepo) async {
+  final authRepo = FakeAuthRepository()
+    ..currentUserResult = success(Samples.user());
   final session = SessionController(
+    GetCurrentUser(authRepo),
     GetUser(userRepo),
+    SignOut(authRepo),
     FollowProducer(userRepo),
     UnfollowProducer(userRepo),
   );
-  await session.load();
+  await session.restore();
   return session;
 }
 
