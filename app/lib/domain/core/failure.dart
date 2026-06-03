@@ -37,6 +37,11 @@ class CacheFailure extends Failure {
   const CacheFailure([super.message = 'Erro de armazenamento local.']);
 }
 
+/// Input failed a business rule before reaching the data layer.
+class ValidationFailure extends Failure {
+  const ValidationFailure([super.message = 'Dados inválidos.']);
+}
+
 /// Fallback for anything unclassified.
 class UnknownFailure extends Failure {
   const UnknownFailure([super.message = 'Ocorreu um erro inesperado.']);

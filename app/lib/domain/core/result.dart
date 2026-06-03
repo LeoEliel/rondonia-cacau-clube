@@ -2,6 +2,10 @@ import 'package:dartz/dartz.dart';
 
 import 'failure.dart';
 
+// Re-export dartz's [Unit] / [unit] so callers can model "success with no value"
+// (e.g. `Result<Unit>` for void-like operations) without importing dartz.
+export 'package:dartz/dartz.dart' show Unit, unit;
+
 /// Functional result type used across the domain/data boundary.
 ///
 /// `Left` carries a [Failure]; `Right` carries the success value `T`. Use cases

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/entities/enums.dart';
 import 'app_colors.dart';
 
-/// The quality seals shown on products and producers.
-enum QualitySeal { cacauFino, origemRO, organico, agrofloresta, comercioJusto }
-
-/// Background + foreground colors and label/icon for a [QualitySeal], taken
-/// from the seal color map in `design_tokens.md` §6. Used by the seal-badge
-/// component (built in a later milestone).
+/// Background + foreground colors, label and icon for a [QualitySeal], taken
+/// from the seal color map in `design_tokens.md` §6. The presentation layer
+/// keys off the single domain [QualitySeal] enum, so seal identity lives in the
+/// domain while its *styling* lives here.
 class SealStyle {
   const SealStyle({
     required this.label,

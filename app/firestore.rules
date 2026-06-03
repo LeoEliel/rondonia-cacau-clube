@@ -1,0 +1,65 @@
+rules_version = '2';
+
+// Security rules for Rondônia Cacau Clube.
+//
+// Model: the catalog (producers, products, origin_lots) is public, read-only
+// content managed out-of-band (seed script / console). User-generated content
+// (reviews, users, subscriptions) is writable only by its owner once Firebase
+// Auth is wired (Milestone 4).
+//
+// NOTE: the seed script writes unauthenticated. Run it while the database is in
+// test mode (or temporarily permissive), then deploy these rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // --- Catalog: public read, no client writes ---
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /origin_lots/{lotId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Producers are public; signed-in users may only adjust followerCount
+    // (via follow/unfollow). All other producer writes are denied.
+    match /producers/{producerId} {
+      allow read: if true;
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data)
+             .affectedKeys().hasOnly(['followerCount']);
+      allow create, delete: if false;
+    }
+
+    // --- Reviews: public read; create by the authoring user; edit by owner ---
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5;
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // --- Users: profiles are public; only the owner can write ---
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId);
+    }
+
+    // --- Subscriptions: private to the owner ---
+    match /subscriptions/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}

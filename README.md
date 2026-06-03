@@ -110,6 +110,49 @@ Storage. Crashlytics collection is disabled in debug builds.
 > good hygiene. Because the keys were briefly public, restrict/rotate them in
 > the Google Cloud Console and lock down Security Rules before any real use.
 
+### Security rules
+
+`app/firestore.rules` makes the catalog (producers/products/origin_lots) public
+read-only, lets signed-in users create their own reviews and adjust a producer's
+follower count, and keeps each user's profile/subscription private to its owner.
+
+---
+
+## Data model & seeding
+
+Firestore collections (wire shapes in `app/lib/data/dtos/`):
+
+| Collection | Key fields |
+|---|---|
+| `users` | name, email, photoUrl, subscriptionTier, followingProducerIds[], createdAt |
+| `producers` | name, type (producer\|cooperative), bio, story, municipality, geo, certifications[], qualitySeals[], photoUrls[], followerCount, rating |
+| `products` | producerId, name, byproductCategory, description, photoUrls[], qualitySeals[], originLotId, rating, reviewCount, createdAt |
+| `origin_lots` | producerId, municipality, geo, harvestDate, processingNotes, timeline[] |
+| `reviews` | productId, userId, rating, text, createdAt, userName, userPhotoUrl |
+| `subscriptions` | tier, status, startedAt, renewsAt (doc id = userId) |
+
+The domain is pure: entities in `lib/domain/entities/`, repository interfaces in
+`lib/domain/repositories/`, use cases in `lib/domain/usecases/` (all returning
+`Result<T>`). Firestore lives only in `lib/data/` (DTO ↔ entity mappers, data
+sources, repository implementations), wired through GetX in
+`lib/core/bindings/data_binding.dart`.
+
+### Seed mock data
+
+A runnable seeder populates Firestore with 7 Rondônia producers/cooperatives
+(Ariquemes, Ji-Paraná, Ouro Preto do Oeste, Cacoal, Jaru, Buritis), 19 products
+weighted toward cocoa honey + nibs, one traceability lot per product, plus
+sample users, reviews and a subscription. Ids are deterministic, so re-running
+overwrites rather than duplicates.
+
+```bash
+cd app
+flutter run -t lib/seed/seed_firestore.dart -d chrome   # or another device
+```
+
+Run it while the database allows unauthenticated writes (Firestore *test mode* /
+your dev rules), then deploy the locked-down `firestore.rules`.
+
 ---
 
 ## Milestones
@@ -117,11 +160,15 @@ Storage. Crashlytics collection is disabled in debug builds.
 - [x] **M1 — Foundation**: Clean Architecture scaffold, GetX (controllers /
   bindings / routes), Firebase wiring, warm-cocoa Material 3 theme (light+dark),
   app shell + bottom navigation (Início · Buscar · Clube · Perfil).
-- [ ] **M2 — Catalog + Traceability**: product domain/data layers + Firestore,
-  Home/Catalog, Product Detail (traceability timeline + origin map pin), seed data.
-- [ ] **M3 — Producers + Reviews**: producer/cooperative profiles, follow,
-  ratings & reviews, quality seals.
-- [ ] **M4 — Cocoa Club + Auth**: onboarding, login/sign-up (email + Google),
-  subscription tiers (mocked paid state), search & filters.
+- [x] **M2 — Domain + Data + Seed**: entities, repository interfaces and use
+  cases (pure domain with `Result`); Firestore data layer (DTOs, mappers, data
+  sources, repository impls) wired via GetX bindings; mock-data seed script +
+  `firestore.rules`; use-case unit tests.
+- [ ] **M3 — Catalog + Traceability UI**: Home/Catalog, Search & Filters,
+  Product Detail (traceability timeline + origin map pin), reusable components.
+- [ ] **M4 — Producers + Reviews UI**: producer/cooperative profiles, follow,
+  ratings & reviews, quality-seal badges.
+- [ ] **M5 — Cocoa Club + Auth**: onboarding, login/sign-up (email + Google),
+  subscription tiers (mocked paid state).
 
 Built incrementally; each milestone is committed and pushed separately.

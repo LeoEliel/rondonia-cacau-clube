@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controllers/theme_controller.dart';
+import 'data_binding.dart';
 
 /// App-wide dependency graph wired before the first route opens.
 ///
@@ -16,5 +17,9 @@ class InitialBinding extends Bindings {
   void dependencies() {
     final prefs = Get.find<SharedPreferences>();
     Get.put<ThemeController>(ThemeController(prefs), permanent: true);
+
+    // Compose the data graph (Firestore → data sources → repositories → use
+    // cases) so feature bindings can resolve use cases on demand.
+    DataBinding().dependencies();
   }
 }
