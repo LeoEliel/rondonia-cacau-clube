@@ -7,6 +7,8 @@ import '../../data/datasources/product_remote_data_source.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../../data/datasources/subscription_remote_data_source.dart';
 import '../../data/datasources/user_remote_data_source.dart';
+import '../../data/repositories/in_memory_producer_repository.dart';
+import '../../data/repositories/in_memory_product_repository.dart';
 import '../../data/repositories/origin_lot_repository_impl.dart';
 import '../../data/repositories/producer_repository_impl.dart';
 import '../../data/repositories/product_repository_impl.dart';
@@ -41,6 +43,9 @@ import '../../domain/usecases/unfollow_producer.dart';
 /// use cases and controllers depend only on abstractions (Dependency
 /// Inversion); swapping Firestore for another backend touches this file alone.
 class DataBinding extends Bindings {
+  /// Toggled with `--dart-define=DEMO=true` to run against in-memory mock data.
+  static const bool _demoMode = bool.fromEnvironment('DEMO');
+
   @override
   void dependencies() {
     // --- Firebase ---
@@ -58,14 +63,24 @@ class DataBinding extends Bindings {
     Get.lazyPut(() => SubscriptionRemoteDataSource(Get.find()), fenix: true);
 
     // --- Repositories (interface ← implementation) ---
-    Get.lazyPut<ProductRepository>(
-      () => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()),
-      fenix: true,
-    );
-    Get.lazyPut<ProducerRepository>(
-      () => ProducerRepositoryImpl(Get.find<ProducerRemoteDataSource>()),
-      fenix: true,
-    );
+    // In demo mode the catalog repositories are served from in-memory mock data
+    // so the UI can be explored without a seeded Firestore. Everything else
+    // (and the default build) stays Firestore-backed.
+    if (_demoMode) {
+      Get.lazyPut<ProductRepository>(InMemoryProductRepository.new,
+          fenix: true);
+      Get.lazyPut<ProducerRepository>(InMemoryProducerRepository.new,
+          fenix: true);
+    } else {
+      Get.lazyPut<ProductRepository>(
+        () => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()),
+        fenix: true,
+      );
+      Get.lazyPut<ProducerRepository>(
+        () => ProducerRepositoryImpl(Get.find<ProducerRemoteDataSource>()),
+        fenix: true,
+      );
+    }
     Get.lazyPut<OriginLotRepository>(
       () => OriginLotRepositoryImpl(Get.find<OriginLotRemoteDataSource>()),
       fenix: true,

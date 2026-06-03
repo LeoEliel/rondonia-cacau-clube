@@ -23,13 +23,17 @@ Future<void> main() async {
 
       // Crash reporting: forward Flutter + platform errors to Crashlytics.
       // Disabled in debug so local runs don't pollute the dashboard.
-      final crashlytics = FirebaseCrashlytics.instance;
-      await crashlytics.setCrashlyticsCollectionEnabled(!kDebugMode);
-      FlutterError.onError = crashlytics.recordFlutterFatalError;
-      PlatformDispatcher.instance.onError = (error, stack) {
-        crashlytics.recordError(error, stack, fatal: true);
-        return true;
-      };
+      // Crashlytics has no web implementation, so it is skipped on web —
+      // initializing it before runApp would throw and leave a blank page.
+      if (!kIsWeb) {
+        final crashlytics = FirebaseCrashlytics.instance;
+        await crashlytics.setCrashlyticsCollectionEnabled(!kDebugMode);
+        FlutterError.onError = crashlytics.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError = (error, stack) {
+          crashlytics.recordError(error, stack, fatal: true);
+          return true;
+        };
+      }
 
       // Analytics instance is created up front so it is ready for screen
       // tracking once feature navigation is wired.
@@ -42,7 +46,15 @@ Future<void> main() async {
 
       runApp(const CacauClubeApp());
     },
-    (error, stack) =>
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true),
+    (error, stack) {
+      if (kIsWeb) {
+        // No Crashlytics on web; surface the error to the console instead.
+        FlutterError.presentError(
+          FlutterErrorDetails(exception: error, stack: stack),
+        );
+        return;
+      }
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    },
   );
 }
