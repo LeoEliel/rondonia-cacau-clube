@@ -29,7 +29,10 @@ void main() {
       GetProducts(FakeProductRepository()),
       GetProducers(FakeProducerRepository()),
     ));
-    Get.put<SearchTabController>(SearchTabController());
+    Get.put<SearchTabController>(SearchTabController(
+      GetProducts(FakeProductRepository()),
+      GetProducers(FakeProducerRepository()),
+    ));
     Get.put<ClubController>(ClubController());
     Get.put<ProfileController>(ProfileController());
   });
