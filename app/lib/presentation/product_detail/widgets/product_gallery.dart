@@ -33,6 +33,7 @@ class ProductGallery extends StatefulWidget {
 class _ProductGalleryState extends State<ProductGallery> {
   final PageController _pageController = PageController();
   int _page = 0;
+  late bool _favorite = widget.favorite;
 
   @override
   void dispose() {
@@ -93,11 +94,12 @@ class _ProductGalleryState extends State<ProductGallery> {
                 ),
                 const SizedBox(width: AppSpacing.md),
                 _GalleryButton(
-                  icon: widget.favorite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  iconColor: widget.favorite ? AppColors.caramel : null,
-                  onTap: widget.onToggleFavorite ?? () {},
+                  icon: _favorite ? Icons.favorite : Icons.favorite_border,
+                  iconColor: _favorite ? AppColors.caramel : null,
+                  onTap: () {
+                    setState(() => _favorite = !_favorite);
+                    widget.onToggleFavorite?.call();
+                  },
                 ),
               ],
             ),

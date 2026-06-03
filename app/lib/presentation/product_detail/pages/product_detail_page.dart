@@ -80,6 +80,7 @@ class _DetailView extends StatelessWidget {
                 photoUrls: product.photoUrls,
                 categoryLabel: product.byproductCategory.label,
                 onBack: Get.back,
+                onShare: () => _share(context),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -132,6 +133,17 @@ class _DetailView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// Share is not wired to a real share sheet yet (no deep-link/asset to share
+  /// in the prototype); surface an "em breve" hint, mirroring the Producer
+  /// Profile's share control so the affordance isn't a dead no-op.
+  void _share(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(content: Text('Compartilhar — em breve.')),
+      );
   }
 
   /// Opens WhatsApp with a pre-filled message about this product.
