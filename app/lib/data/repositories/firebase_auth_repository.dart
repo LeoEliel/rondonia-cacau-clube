@@ -5,6 +5,8 @@ import '../../domain/core/failure.dart';
 import '../../domain/core/result.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../datasources/user_remote_data_source.dart';
+import '../dtos/user_dto.dart';
 
 /// Firebase-backed [AuthRepository] (production path).
 ///
@@ -17,10 +19,11 @@ import '../../domain/repositories/auth_repository.dart';
 /// native Google auth needs the `google_sign_in` package and OAuth clients,
 /// deferred until those are provisioned.
 class FirebaseAuthRepository implements AuthRepository {
-  FirebaseAuthRepository([fb.FirebaseAuth? auth])
+  FirebaseAuthRepository(this._users, [fb.FirebaseAuth? auth])
       : _auth = auth ?? fb.FirebaseAuth.instance;
 
   final fb.FirebaseAuth _auth;
+  final UserRemoteDataSource _users;
 
   @override
   Future<Result<User?>> currentUser() async {
@@ -59,7 +62,9 @@ class FirebaseAuthRepository implements AuthRepository {
       );
       await credential.user!.updateDisplayName(name.trim());
       await credential.user!.reload();
-      return success(_toEntity(_auth.currentUser ?? credential.user!));
+      final user = _toEntity(_auth.currentUser ?? credential.user!);
+      await _ensureProfile(user);
+      return success(user);
     } on fb.FirebaseAuthException catch (e) {
       return failure(_mapError(e));
     } catch (_) {
@@ -77,7 +82,9 @@ class FirebaseAuthRepository implements AuthRepository {
     try {
       final credential =
           await _auth.signInWithPopup(fb.GoogleAuthProvider());
-      return success(_toEntity(credential.user!));
+      final user = _toEntity(credential.user!);
+      await _ensureProfile(user);
+      return success(user);
     } on fb.FirebaseAuthException catch (e) {
       return failure(_mapError(e));
     } catch (_) {
@@ -89,6 +96,25 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<Result<Unit>> signOut() async {
     await _auth.signOut();
     return success(unit);
+  }
+
+  /// Provisions the Firestore `users/{uid}` profile on first authentication so
+  /// the rest of the app (follow, subscription, profile reads) has a document
+  /// to read and update. No-op when one already exists. Failures here are
+  /// swallowed: the account is created and usable, and the profile can be
+  /// created on a later sign-in — auth must not fail because of a profile write.
+  Future<void> _ensureProfile(User user) async {
+    try {
+      await _users.ensureProfile(UserDto(
+        uid: user.uid,
+        name: user.name,
+        email: user.email,
+        photoUrl: user.photoUrl,
+        createdAt: user.createdAt,
+      ));
+    } catch (_) {
+      // Best-effort; ignore (e.g. transient offline write).
+    }
   }
 
   /// Builds the domain [User] from the Firebase account. Profile fields the

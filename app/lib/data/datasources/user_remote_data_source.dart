@@ -24,6 +24,19 @@ class UserRemoteDataSource {
     return UserDto.fromDoc(doc);
   }
 
+  /// Creates the user's profile document the first time they authenticate.
+  ///
+  /// No-op when the document already exists, so it is safe to call on every
+  /// sign-in (e.g. repeat Google logins) without clobbering an existing
+  /// profile's tier or followed producers.
+  Future<void> ensureProfile(UserDto dto) async {
+    final ref = _users.doc(dto.uid);
+    final snap = await ref.get();
+    if (!snap.exists) {
+      await ref.set(dto.toMap());
+    }
+  }
+
   /// Atomically adds [producerId] to the user's following list and bumps the
   /// producer's follower count.
   Future<void> follow(String uid, String producerId) {

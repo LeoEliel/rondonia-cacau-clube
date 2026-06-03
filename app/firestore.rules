@@ -19,10 +19,15 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    // --- Catalog: public read, no client writes ---
+    // --- Catalog: public read; signed-in users may only bump reviewCount ---
+    // (the denormalized counter the review-add flow increments). Every other
+    // product field is managed out-of-band (seed script / console).
     match /products/{productId} {
       allow read: if true;
-      allow write: if false;
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data)
+             .affectedKeys().hasOnly(['reviewCount']);
+      allow create, delete: if false;
     }
 
     match /origin_lots/{lotId} {

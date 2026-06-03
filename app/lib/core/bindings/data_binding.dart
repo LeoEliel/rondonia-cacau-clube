@@ -111,7 +111,10 @@ class DataBinding extends Bindings {
         () => UserRepositoryImpl(Get.find<UserRemoteDataSource>()),
         fenix: true,
       );
-      Get.lazyPut<AuthRepository>(FirebaseAuthRepository.new, fenix: true);
+      Get.lazyPut<AuthRepository>(
+        () => FirebaseAuthRepository(Get.find<UserRemoteDataSource>()),
+        fenix: true,
+      );
       Get.lazyPut<SubscriptionRepository>(
         () =>
             SubscriptionRepositoryImpl(Get.find<SubscriptionRemoteDataSource>()),
