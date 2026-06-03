@@ -1,5 +1,7 @@
 import 'package:app/core/controllers/theme_controller.dart';
 import 'package:app/core/theme/app_theme.dart';
+import 'package:app/domain/usecases/get_producers.dart';
+import 'package:app/domain/usecases/get_products.dart';
 import 'package:app/presentation/club/controllers/club_controller.dart';
 import 'package:app/presentation/home/controllers/home_controller.dart';
 import 'package:app/presentation/profile/controllers/profile_controller.dart';
@@ -11,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers/fake_repositories.dart';
+
 void main() {
   late SharedPreferences prefs;
 
@@ -21,7 +25,10 @@ void main() {
     Get.put<SharedPreferences>(prefs, permanent: true);
     Get.put<ThemeController>(ThemeController(prefs), permanent: true);
     Get.put<ShellController>(ShellController());
-    Get.put<HomeController>(HomeController());
+    Get.put<HomeController>(HomeController(
+      GetProducts(FakeProductRepository()),
+      GetProducers(FakeProducerRepository()),
+    ));
     Get.put<SearchTabController>(SearchTabController());
     Get.put<ClubController>(ClubController());
     Get.put<ProfileController>(ProfileController());
@@ -34,9 +41,12 @@ void main() {
         home: const ShellPage(),
       );
 
+  // Bounded pumps (not pumpAndSettle): the Home tab's catalog load shows a
+  // progress spinner that wouldn't settle within this shell-focused test. The
+  // navigation bar renders on the first frame, which is all these tests check.
   testWidgets('renders the four navigation destinations', (tester) async {
     await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.text('Início'), findsWidgets);
     expect(find.text('Buscar'), findsWidgets);
@@ -46,12 +56,12 @@ void main() {
 
   testWidgets('tapping a destination changes the active tab', (tester) async {
     await tester.pumpWidget(wrap());
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(Get.find<ShellController>().currentIndex, 0);
 
     await tester.tap(find.text('Clube'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(Get.find<ShellController>().currentIndex, 2);
   });

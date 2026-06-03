@@ -52,8 +52,14 @@ class FakeProducerRepository implements ProducerRepository {
   Result<Producer> getProducerByIdResult = failure(const NotFoundFailure());
   String? lastId;
 
+  /// Optional delay so widget tests can observe a transient loading state.
+  Duration delay = Duration.zero;
+
   @override
-  Future<Result<List<Producer>>> getProducers() async => getProducersResult;
+  Future<Result<List<Producer>>> getProducers() async {
+    if (delay > Duration.zero) await Future<void>.delayed(delay);
+    return getProducersResult;
+  }
 
   @override
   Future<Result<Producer>> getProducerById(String id) async {
