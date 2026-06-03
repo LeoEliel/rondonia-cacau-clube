@@ -79,4 +79,38 @@ abstract final class AppStrings {
   static const String profileSignOut = 'Sair da conta';
   static const String profileSignOutConfirm = 'Deseja sair da sua conta?';
   static const String cancel = 'Cancelar';
+
+  // Cocoa Club
+  static const String clubHeadline = 'Clube do Cacau';
+  static const String clubSubtitle =
+      'Histórias de quem planta, lançamentos antecipados e conteúdo curado '
+      'da floresta.';
+  static const String clubFreeTier = 'Gratuito';
+  static const String clubPaidTier = 'Clube';
+  static const String clubCurrentPlan = 'PLANO ATUAL';
+  static const String clubRecommended = 'RECOMENDADO';
+  static const String clubPaidIntro = 'Tudo do gratuito, e mais:';
+  static const String clubSubscribe = 'Assinar o Clube';
+  static const String clubAlreadyMember = 'Você já é Membro do Clube';
+  static const String clubNoCharge = 'Protótipo — sem cobrança real.';
+  static const String clubSubscribedTitle = 'Bem-vindo ao Clube!';
+  static const String clubSubscribedBody =
+      'Conteúdo exclusivo da floresta liberado para você.';
+  static const String clubSubscribeError =
+      'Não foi possível assinar agora. Tente novamente.';
+  static const String clubExclusive = 'Exclusivo';
+  static const String clubContentSection = 'Do Clube';
+
+  // Cocoa Club — free benefits
+  static const String clubFreeBenefit1 = 'Explorar o catálogo e a origem';
+  static const String clubFreeBenefit2 = 'Seguir produtores e cooperativas';
+  static const String clubFreeBenefit3 = 'Avaliar produtos';
+
+  // Cocoa Club — paid benefits
+  static const String clubPaidBenefit1 = 'Histórias exclusivas dos produtores';
+  static const String clubPaidBenefit2 =
+      'Acesso antecipado a lançamentos & safras';
+  static const String clubPaidBenefit3 =
+      'Conteúdo curado: receitas e harmonizações';
+  static const String clubPaidBenefit4 = 'Selo de Membro no seu perfil';
 }

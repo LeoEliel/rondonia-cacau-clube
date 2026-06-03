@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../domain/core/usecase.dart';
+import '../../domain/entities/enums.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/usecases/follow_producer.dart';
 import '../../domain/usecases/get_current_user.dart';
@@ -82,6 +83,14 @@ class SessionController extends GetxController {
     _following
       ..clear()
       ..addAll(user.followingProducerIds);
+  }
+
+  /// Reflects a (mock) Club subscription change on the current identity so the
+  /// Club and Profile tabs update reactively without a full profile re-fetch.
+  void applySubscriptionTier(SubscriptionTier tier) {
+    final current = _user.value;
+    if (current == null) return;
+    _user.value = current.copyWith(subscriptionTier: tier);
   }
 
   /// Ends the session and clears local identity + follow state.

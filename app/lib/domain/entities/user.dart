@@ -28,4 +28,22 @@ class User {
 
   bool isFollowing(String producerId) =>
       followingProducerIds.contains(producerId);
+
+  User copyWith({
+    String? name,
+    String? email,
+    String? photoUrl,
+    SubscriptionTier? subscriptionTier,
+    List<String>? followingProducerIds,
+  }) {
+    return User(
+      uid: uid,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      subscriptionTier: subscriptionTier ?? this.subscriptionTier,
+      followingProducerIds: followingProducerIds ?? this.followingProducerIds,
+      createdAt: createdAt,
+    );
+  }
 }

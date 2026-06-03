@@ -6,6 +6,7 @@ import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_producers.dart';
 import 'package:app/domain/usecases/get_products.dart';
 import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/set_subscription_tier.dart';
 import 'package:app/domain/usecases/sign_out.dart';
 import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/club/controllers/club_controller.dart';
@@ -50,7 +51,9 @@ void main() {
       GetProducts(FakeProductRepository()),
       GetProducers(FakeProducerRepository()),
     ));
-    Get.put<ClubController>(ClubController());
+    Get.put<ClubController>(
+      ClubController(session, SetSubscriptionTier(FakeSubscriptionRepository())),
+    );
     Get.put<ProfileController>(ProfileController(session, themeController));
   });
 
