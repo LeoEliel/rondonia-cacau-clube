@@ -53,14 +53,20 @@ Layer rules:
 
 ## Design system
 
-The warm-cocoa Material 3 theme (light **and** dark) is generated from the
-design tokens in `design/screens/Tokens _ Componentes.png`:
+The single source of truth is [`design_tokens.md`](design_tokens.md) at the repo
+root; the warm-cocoa Material 3 theme (light **and** dark) is generated from it
+under `app/lib/core/theme/` (`app_colors`, `app_typography`, `app_spacing`,
+`app_radii`, `app_elevation`, `app_seals`):
 
 - **Surfaces**: cream `#FBF4E9`, white, soft creams.
-- **Cacau**: choco `#2E1C12 / #5A3522 / #6B3F23`, caramel `#B5703A`.
-- **Accent**: honey/amber `#D98B1F`, amber-soft `#F3C95E`, forest green `#3F7A43`.
-- **Type**: Lora (serif, display/titles) + Hanken Grotesk (sans, body).
-- **Radii**: 12 / 18 / 26 / 32 / pill. **Spacing** (base 4): 4 / 8 / 12 / 16 / 20 / 26.
+- **Cacau**: choco `#241208 / #2E1C12 / #3A2317 / #5A3522 / #6B3F23`, caramel `#B5703A`.
+- **Amber accent**: `#D98B1F` (+ deep `#C0741A`, soft `#F3C95E`, tint `#FBEFD2`).
+- **Forest green accent**: `#3F7A43` (+ deep `#356637`, soft `#6BA45F`, tint `#E6F0DF`).
+- **Type**: Lora (serif — display/titles/product names/italic story) + Hanken
+  Grotesk (sans — body/meta/overline/seal).
+- **Radii**: 8 / 12 / 18 / 26 / 32 / pill. **Spacing** (base 4): 4 / 8 / 12 / 16 /
+  20 / 26, plus semantic `pad 20 · gap 14 · gapSm 9 · sect 26 · cardPad 15`.
+- **Elevation**: cocoa-tinted `e1 / e2 / e3` shadows. **Quality seals** color map.
 
 ---
 
