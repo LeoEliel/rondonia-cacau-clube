@@ -7,6 +7,7 @@ import '../../data/datasources/product_remote_data_source.dart';
 import '../../data/datasources/review_remote_data_source.dart';
 import '../../data/datasources/subscription_remote_data_source.dart';
 import '../../data/datasources/user_remote_data_source.dart';
+import '../../data/repositories/in_memory_origin_lot_repository.dart';
 import '../../data/repositories/in_memory_producer_repository.dart';
 import '../../data/repositories/in_memory_product_repository.dart';
 import '../../data/repositories/origin_lot_repository_impl.dart';
@@ -63,13 +64,15 @@ class DataBinding extends Bindings {
     Get.lazyPut(() => SubscriptionRemoteDataSource(Get.find()), fenix: true);
 
     // --- Repositories (interface ← implementation) ---
-    // In demo mode the catalog repositories are served from in-memory mock data
-    // so the UI can be explored without a seeded Firestore. Everything else
-    // (and the default build) stays Firestore-backed.
+    // In demo mode the catalog + traceability repositories are served from
+    // in-memory mock data so the UI can be explored without a seeded Firestore.
+    // Everything else (and the default build) stays Firestore-backed.
     if (_demoMode) {
       Get.lazyPut<ProductRepository>(InMemoryProductRepository.new,
           fenix: true);
       Get.lazyPut<ProducerRepository>(InMemoryProducerRepository.new,
+          fenix: true);
+      Get.lazyPut<OriginLotRepository>(InMemoryOriginLotRepository.new,
           fenix: true);
     } else {
       Get.lazyPut<ProductRepository>(
@@ -80,11 +83,11 @@ class DataBinding extends Bindings {
         () => ProducerRepositoryImpl(Get.find<ProducerRemoteDataSource>()),
         fenix: true,
       );
+      Get.lazyPut<OriginLotRepository>(
+        () => OriginLotRepositoryImpl(Get.find<OriginLotRemoteDataSource>()),
+        fenix: true,
+      );
     }
-    Get.lazyPut<OriginLotRepository>(
-      () => OriginLotRepositoryImpl(Get.find<OriginLotRemoteDataSource>()),
-      fenix: true,
-    );
     Get.lazyPut<ReviewRepository>(
       () => ReviewRepositoryImpl(Get.find<ReviewRemoteDataSource>()),
       fenix: true,

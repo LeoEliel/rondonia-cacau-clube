@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/category_labels.dart';
+import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_message_view.dart';
 import '../../../core/widgets/product_card.dart';
@@ -109,7 +110,10 @@ class _CatalogView extends StatelessWidget {
                         : null,
                     municipality:
                         controller.featuredProducer?.municipality,
-                    onTap: () => _showSoon(context),
+                    onTap: () => Get.toNamed(
+                      AppRoutes.productDetail,
+                      arguments: featured.id,
+                    ),
                   ),
                 ],
               ],
@@ -181,7 +185,10 @@ class _CatalogView extends StatelessWidget {
                     product: product,
                     municipality:
                         controller.municipalityFor(product.producerId),
-                    onTap: () => _showSoon(context),
+                    onTap: () => Get.toNamed(
+                      AppRoutes.productDetail,
+                      arguments: product.id,
+                    ),
                   );
                 },
                 childCount: products.length,
@@ -194,15 +201,6 @@ class _CatalogView extends StatelessWidget {
     );
   }
 
-  void _showSoon(BuildContext context) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Detalhes do produto chegam na próxima etapa.'),
-        ),
-      );
-  }
 }
 
 class _CategoryChips extends StatelessWidget {

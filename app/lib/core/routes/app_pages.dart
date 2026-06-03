@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../presentation/product_detail/bindings/product_detail_binding.dart';
+import '../../presentation/product_detail/pages/product_detail_page.dart';
 import '../../presentation/shell/bindings/shell_binding.dart';
 import '../../presentation/shell/pages/shell_page.dart';
 import 'app_routes.dart';
@@ -18,7 +20,12 @@ abstract final class AppPages {
       page: () => const ShellPage(),
       binding: ShellBinding(),
     ),
-    // Feature routes (onboarding, login, product detail, producer, club,
-    // reviews) are registered here in the following milestones.
+    GetPage(
+      name: AppRoutes.productDetail,
+      page: () => const ProductDetailPage(),
+      binding: ProductDetailBinding(),
+    ),
+    // Remaining feature routes (onboarding, login, producer, club, reviews)
+    // are registered here in the following milestones.
   ];
 }
