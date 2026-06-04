@@ -251,10 +251,11 @@ Future<void> _openWriteSheet(
   ReviewsController controller,
 ) async {
   final textController = TextEditingController();
+  final scheme = Theme.of(context).colorScheme;
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: AppColors.surface,
+    backgroundColor: scheme.surface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.lg)),
     ),
@@ -269,7 +270,7 @@ Future<void> _openWriteSheet(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Sua avaliação', style: AppTypography.section(AppColors.text)),
+          Text('Sua avaliação', style: AppTypography.section(scheme.onSurface)),
           const SizedBox(height: AppSpacing.lg),
           Center(
             child: Obx(() => StarRow(
