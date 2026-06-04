@@ -20,4 +20,8 @@ abstract final class AppSpacing {
   static const double gapSm = 9; // gap between chips / compact items
   static const double sect = 26; // space between sections
   static const double cardPad = 15; // inner card padding
+
+  // Layout: cap single-column content (e.g. Product Detail) so it reads as a
+  // centered column on wide web instead of stretching edge-to-edge.
+  static const double maxContentWidth = 520;
 }

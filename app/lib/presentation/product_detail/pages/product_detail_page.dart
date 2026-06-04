@@ -63,26 +63,32 @@ class _DetailView extends StatelessWidget {
 
   final ProductDetailController controller;
 
+  /// Above this viewport width the gallery and copy sit side by side instead of
+  /// stacking, so wide web uses the horizontal space instead of padding it away.
+  static const double _wideBreakpoint = 840;
+  static const double _wideMaxWidth = 1040;
+
   @override
   Widget build(BuildContext context) {
     final product = controller.product!;
     final producer = controller.producer;
     final lot = controller.originLot;
-    final cs = Theme.of(context).colorScheme;
+    final hasTrace = controller.hasTraceability;
+    final isWide = MediaQuery.sizeOf(context).width >= _wideBreakpoint;
 
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
-          child: Column(
+    final gallery = ProductGallery(
+      photoUrls: product.photoUrls,
+      categoryLabel: product.byproductCategory.label,
+      onBack: Get.back,
+      onShare: () => _share(context),
+    );
+
+    final Widget body = isWide
+        ? _wideBody(context, product, producer, lot, hasTrace, gallery)
+        : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProductGallery(
-                photoUrls: product.photoUrls,
-                categoryLabel: product.byproductCategory.label,
-                onBack: Get.back,
-                onShare: () => _share(context),
-              ),
+              gallery,
               Padding(
                 padding: const EdgeInsets.fromLTRB(
                   ProductDetailPage._pad,
@@ -90,49 +96,90 @@ class _DetailView extends StatelessWidget {
                   ProductDetailPage._pad,
                   0,
                 ),
+                child: _Content(
+                  controller: controller,
+                  onWhatsApp: () => _openWhatsApp(context, product, producer!),
+                ),
+              ),
+            ],
+          );
+
+    return Stack(
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: isWide ? _wideMaxWidth : AppSpacing.maxContentWidth,
+              ),
+              child: body,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Wide web layout: gallery + product intro (and the traceability lead-in) side
+  /// by side, then the timeline + map + WhatsApp CTA broken out to the full
+  /// content width below — so the lower content spans the page instead of
+  /// hugging the right column.
+  Widget _wideBody(
+    BuildContext context,
+    Product product,
+    Producer? producer,
+    OriginLot? lot,
+    bool hasTrace,
+    Widget gallery,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        ProductDetailPage._pad,
+        AppSpacing.xl,
+        ProductDetailPage._pad,
+        0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 5,
+                child: ClipRRect(borderRadius: AppRadii.brLg, child: gallery),
+              ),
+              const SizedBox(width: AppSpacing.sect),
+              Expanded(
+                flex: 6,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Header(product: product),
-                    const SizedBox(height: AppSpacing.lg),
-                    if (product.qualitySeals.isNotEmpty) ...[
-                      Wrap(
-                        spacing: AppSpacing.sm,
-                        runSpacing: AppSpacing.sm,
-                        children: [
-                          for (final seal in product.qualitySeals)
-                            SealBadge(seal),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                    ],
-                    Text(
-                      product.description,
-                      style: AppTypography.body(cs.onSurfaceVariant),
-                    ),
-                    if (controller.hasTraceability) ...[
+                    _Intro(product: product),
+                    if (hasTrace) ...[
                       const SizedBox(height: AppSpacing.sect),
-                      _TraceabilitySection(producer: producer, lot: lot!),
+                      _TraceabilityHeader(producer: producer, lot: lot!),
                     ],
-                    const SizedBox(height: AppSpacing.sect),
-                    if (producer != null)
-                      _WhatsAppButton(
-                        onTap: () => _openWhatsApp(context, product, producer),
-                      ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Center(
-                      child: Text(
-                        'Vitrine de origem · sem venda no app.',
-                        style: AppTypography.meta(cs.outline),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: AppSpacing.sect),
+          if (hasTrace) ...[
+            _TraceabilityTrail(lot: lot!),
+            const SizedBox(height: AppSpacing.sect),
+          ],
+          if (producer != null) ...[
+            _WhatsAppButton(
+              onTap: () => _openWhatsApp(context, product, producer),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
+          const _ShowcaseFooter(),
+        ],
+      ),
     );
   }
 
@@ -142,9 +189,7 @@ class _DetailView extends StatelessWidget {
   void _share(BuildContext context) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(content: Text('Compartilhar — em breve.')),
-      );
+      ..showSnackBar(const SnackBar(content: Text('Compartilhar — em breve.')));
   }
 
   /// Opens WhatsApp with a pre-filled message about this product.
@@ -158,14 +203,14 @@ class _DetailView extends StatelessWidget {
     Producer producer,
   ) async {
     const placeholderPhone = '5569999999999';
-    final message = 'Olá! Tenho interesse no produto "${product.name}" '
+    final message =
+        'Olá! Tenho interesse no produto "${product.name}" '
         'de ${producer.name}. Pode me contar mais sobre a origem?';
     final uri = Uri.parse(
       'https://wa.me/$placeholderPhone?text=${Uri.encodeComponent(message)}',
     );
 
-    final launched =
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -173,6 +218,90 @@ class _DetailView extends StatelessWidget {
           const SnackBar(content: Text('Não foi possível abrir o WhatsApp.')),
         );
     }
+  }
+}
+
+/// The textual half of the detail screen for the stacked (mobile) layout:
+/// intro, the whole traceability block, the WhatsApp CTA and the showcase
+/// footer in one column. Wide web composes the same pieces differently — intro
+/// + traceability header in the right column, trail + CTA full-width — directly
+/// in [_DetailView].
+class _Content extends StatelessWidget {
+  const _Content({required this.controller, required this.onWhatsApp});
+
+  final ProductDetailController controller;
+  final VoidCallback onWhatsApp;
+
+  @override
+  Widget build(BuildContext context) {
+    final product = controller.product!;
+    final producer = controller.producer;
+    final lot = controller.originLot;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Intro(product: product),
+        if (controller.hasTraceability) ...[
+          const SizedBox(height: AppSpacing.sect),
+          _TraceabilitySection(producer: producer, lot: lot!),
+        ],
+        const SizedBox(height: AppSpacing.sect),
+        if (producer != null) _WhatsAppButton(onTap: onWhatsApp),
+        const SizedBox(height: AppSpacing.lg),
+        const _ShowcaseFooter(),
+      ],
+    );
+  }
+}
+
+/// Product identity: header (category, name, rating), quality seals and the
+/// description. The top of the right column on wide web.
+class _Intro extends StatelessWidget {
+  const _Intro({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Header(product: product),
+        const SizedBox(height: AppSpacing.lg),
+        if (product.qualitySeals.isNotEmpty) ...[
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              for (final seal in product.qualitySeals) SealBadge(seal),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+        Text(
+          product.description,
+          style: AppTypography.body(cs.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+}
+
+/// Centered "vitrine de origem" disclaimer that closes the page.
+class _ShowcaseFooter extends StatelessWidget {
+  const _ShowcaseFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Text(
+        'Vitrine de origem · sem venda no app.',
+        style: AppTypography.meta(cs.outline),
+      ),
+    );
   }
 }
 
@@ -222,8 +351,7 @@ class _Header extends StatelessWidget {
                   style: AppTypography.meta(cs.onSurfaceVariant),
                 ),
                 const SizedBox(width: 2),
-                Icon(Icons.chevron_right_rounded,
-                    size: 18, color: cs.outline),
+                Icon(Icons.chevron_right_rounded, size: 18, color: cs.outline),
               ],
             ),
           ),
@@ -233,8 +361,32 @@ class _Header extends StatelessWidget {
   }
 }
 
+/// Whole Rastreabilidade block (mobile / stacked layout): the [_TraceabilityHeader]
+/// lead-in followed by the [_TraceabilityTrail]. On wide web the two halves are
+/// placed separately (header in the right column, trail full-width) — see
+/// [_DetailView].
 class _TraceabilitySection extends StatelessWidget {
   const _TraceabilitySection({required this.producer, required this.lot});
+
+  final Producer? producer;
+  final OriginLot lot;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _TraceabilityHeader(producer: producer, lot: lot),
+        const SizedBox(height: AppSpacing.xl),
+        _TraceabilityTrail(lot: lot),
+      ],
+    );
+  }
+}
+
+/// Rastreabilidade lead-in: section title, producer link and lot/harvest facts.
+class _TraceabilityHeader extends StatelessWidget {
+  const _TraceabilityHeader({required this.producer, required this.lot});
 
   final Producer? producer;
   final OriginLot lot;
@@ -249,10 +401,7 @@ class _TraceabilitySection extends StatelessWidget {
           children: [
             const Icon(Icons.eco_rounded, size: 20, color: AppColors.greenDeep),
             const SizedBox(width: AppSpacing.sm),
-            Text(
-              'Rastreabilidade',
-              style: AppTypography.section(cs.onSurface),
-            ),
+            Text('Rastreabilidade', style: AppTypography.section(cs.onSurface)),
           ],
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -277,7 +426,25 @@ class _TraceabilitySection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.xl),
+      ],
+    );
+  }
+}
+
+/// Rastreabilidade trail: the "Da floresta ao pote" heading, the farm-to-product
+/// timeline and the origin map. On wide web this breaks out to the full content
+/// width below the gallery/intro row.
+class _TraceabilityTrail extends StatelessWidget {
+  const _TraceabilityTrail({required this.lot});
+
+  final OriginLot lot;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           'Da floresta ao pote',
           style: AppTypography.bodyBold(cs.onSurface),
