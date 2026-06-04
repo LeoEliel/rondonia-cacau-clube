@@ -21,6 +21,10 @@ class HomePage extends GetView<HomeController> {
 
   static const double _pad = AppSpacing.pad;
 
+  /// Max width a catalog card is allowed to grow to before the grid adds
+  /// another column — keeps cards from ballooning on wide web windows.
+  static const double _maxCardWidth = 260;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +87,15 @@ class _CatalogView extends StatelessWidget {
     final theme = Theme.of(context);
     final featured = controller.featuredProduct;
     final products = controller.visibleProducts;
+
+    // Catalog grid: responsive column count so cards keep a sensible size on
+    // wide web windows (2 across on phones, more as the viewport grows). Each
+    // tile is then sized to the card's own content height (photo + text block)
+    // so there is no empty band beneath the card.
+    final gridWidth = MediaQuery.sizeOf(context).width - HomePage._pad * 2;
+    final columns = (gridWidth / HomePage._maxCardWidth).ceil().clamp(2, 6);
+    final tileWidth = (gridWidth - AppSpacing.gap * (columns - 1)) / columns;
+    final cardExtent = ProductCard.extentFor(tileWidth);
 
     return CustomScrollView(
       slivers: [
@@ -171,12 +184,11 @@ class _CatalogView extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: HomePage._pad),
             sliver: SliverGrid(
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
                 mainAxisSpacing: AppSpacing.gap,
                 crossAxisSpacing: AppSpacing.gap,
-                childAspectRatio: 0.60,
+                mainAxisExtent: cardExtent,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {

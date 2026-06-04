@@ -25,6 +25,20 @@ class ProductCard extends StatefulWidget {
   final String municipality;
   final VoidCallback? onTap;
 
+  /// Width / height ratio of the photo area.
+  static const double imageAspect = 1.18;
+
+  /// Height the content block below the photo needs (inner padding + category
+  /// overline + two-line name + spacing + the location/rating row). The catalog
+  /// grid adds this to the photo height so each tile hugs its content instead of
+  /// being stretched to a fixed aspect ratio.
+  static const double contentHeight = 132;
+
+  /// Tile height for a card rendered at [tileWidth]: photo (sized by
+  /// [imageAspect]) plus the fixed [contentHeight].
+  static double extentFor(double tileWidth) =>
+      tileWidth / imageAspect + contentHeight;
+
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
@@ -51,7 +65,7 @@ class _ProductCardState extends State<ProductCard> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AspectRatio(
-              aspectRatio: 1.18,
+              aspectRatio: ProductCard.imageAspect,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
