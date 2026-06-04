@@ -20,7 +20,59 @@ abstract final class MockData {
   static final DateTime _now = DateTime(2026, 5, 20);
   static DateTime _daysAgo(int d) => _now.subtract(Duration(days: d));
 
-  static String _img(String seed) => 'https://picsum.photos/seed/$seed/800/600';
+  /// Curated stock photography (Pexels, no API key required) keyed to each
+  /// entity so the catalog shows believable product/producer imagery instead of
+  /// random placeholders. Every id below was verified to resolve to a real,
+  /// category-appropriate image.
+  static String _px(int id) =>
+      'https://images.pexels.com/photos/$id/pexels-photo-$id.jpeg'
+      '?auto=compress&cs=tinysrgb&w=800';
+
+  // Two cocoa-farm / cacao-fruit photos per producer.
+  static const Map<String, List<int>> _producerPhotoIds = {
+    'prod_cacau_norte': [14681543, 36575460],
+    'prod_mel_floresta': [30420479, 14436363],
+    'prod_ouro_verde': [15507929, 37062650],
+    'prod_cacaueiros_cacoal': [10336644, 16964902],
+    'prod_boa_esperanca': [32954307, 37680483],
+    'prod_amazonia_cacau': [31821114, 34750860],
+    'prod_familia_brasil': [37516665, 14436367],
+  };
+
+  // One category-matched product photo per product id (honey, nibs, butter,
+  // powder, cacao pulp, jelly, liqueur, cosmetic, husk coffee, chocolate).
+  static const Map<String, int> _productPhotoIds = {
+    'prd_mel_001': 4921856,
+    'prd_mel_002': 9435706,
+    'prd_mel_003': 13246534,
+    'prd_mel_004': 5719608,
+    'prd_mel_005': 5865194,
+    'prd_mel_006': 9105966,
+    'prd_nib_001': 4157763,
+    'prd_nib_002': 5252192,
+    'prd_nib_003': 16223852,
+    'prd_nib_004': 6420910,
+    'prd_nib_005': 5208265,
+    'prd_man_001': 18114222,
+    'prd_pwd_001': 1212845,
+    'prd_plp_001': 14436364,
+    'prd_jel_001': 9160297,
+    'prd_liq_001': 838673,
+    'prd_cos_001': 36375352,
+    'prd_hsk_001': 111159,
+    'prd_cho_001': 6167328,
+  };
+
+  // Avatar per user id (reused for that user's reviews).
+  static const Map<String, int> _userPhotoIds = {
+    'user_ana': 18890524,
+    'user_joao': 30735123,
+  };
+
+  static List<String> _producerPhotos(String id) =>
+      _producerPhotoIds[id]!.map(_px).toList();
+  static List<String> _productPhotos(String id) => [_px(_productPhotoIds[id]!)];
+  static String _userPhoto(String id) => _px(_userPhotoIds[id]!);
 
   // Seal / category / type wire keys via the domain enums (no typos).
   static final String _cacauFino = QualitySeal.cacauFino.wireKey;
@@ -48,7 +100,7 @@ abstract final class MockData {
       geoLng: -63.0409,
       certifications: const ['Cooperativa registrada OCB', 'Cacau Fino do Brasil'],
       qualitySeals: [_cacauFino, _origemRO, _agrofloresta],
-      photoUrls: [_img('cacau-norte-1'), _img('cacau-norte-2')],
+      photoUrls: _producerPhotos('prod_cacau_norte'),
       followerCount: 1280,
       rating: 4.8,
     ),
@@ -66,7 +118,7 @@ abstract final class MockData {
       geoLng: -61.9517,
       certifications: const ['Boas Práticas Agrícolas'],
       qualitySeals: [_cacauFino, _origemRO],
-      photoUrls: [_img('mel-floresta-1'), _img('mel-floresta-2')],
+      photoUrls: _producerPhotos('prod_mel_floresta'),
       followerCount: 842,
       rating: 4.9,
     ),
@@ -84,7 +136,7 @@ abstract final class MockData {
       geoLng: -62.2159,
       certifications: const ['Certificação Orgânica IBD'],
       qualitySeals: [_organico, _origemRO],
-      photoUrls: [_img('ouro-verde-1'), _img('ouro-verde-2')],
+      photoUrls: _producerPhotos('prod_ouro_verde'),
       followerCount: 657,
       rating: 4.7,
     ),
@@ -102,7 +154,7 @@ abstract final class MockData {
       geoLng: -61.4472,
       certifications: const ['Comércio Justo (Fairtrade)'],
       qualitySeals: [_comercioJusto, _organico, _origemRO],
-      photoUrls: [_img('cacoal-1'), _img('cacoal-2')],
+      photoUrls: _producerPhotos('prod_cacaueiros_cacoal'),
       followerCount: 934,
       rating: 4.6,
     ),
@@ -119,7 +171,7 @@ abstract final class MockData {
       geoLng: -62.4664,
       certifications: const ['Agricultura Familiar (DAP)'],
       qualitySeals: [_cacauFino, _agrofloresta],
-      photoUrls: [_img('boa-esperanca-1'), _img('boa-esperanca-2')],
+      photoUrls: _producerPhotos('prod_boa_esperanca'),
       followerCount: 421,
       rating: 4.7,
     ),
@@ -137,7 +189,7 @@ abstract final class MockData {
       geoLng: -63.8294,
       certifications: const ['Sistema Agroflorestal Certificado'],
       qualitySeals: [_agrofloresta, _comercioJusto, _origemRO],
-      photoUrls: [_img('amazonia-1'), _img('amazonia-2')],
+      photoUrls: _producerPhotos('prod_amazonia_cacau'),
       followerCount: 1103,
       rating: 4.8,
     ),
@@ -154,7 +206,7 @@ abstract final class MockData {
       geoLng: -62.2159,
       certifications: const ['Cosmético Natural'],
       qualitySeals: [_organico],
-      photoUrls: [_img('familia-brasil-1'), _img('familia-brasil-2')],
+      photoUrls: _producerPhotos('prod_familia_brasil'),
       followerCount: 389,
       rating: 4.5,
     ),
@@ -304,7 +356,7 @@ abstract final class MockData {
       uid: 'user_ana',
       name: 'Ana Souza',
       email: 'ana.souza@example.com',
-      photoUrl: _img('user-ana'),
+      photoUrl: _userPhoto('user_ana'),
       subscriptionTier: SubscriptionTier.paid.wireKey,
       followingProducerIds: const ['prod_mel_floresta', 'prod_cacau_norte'],
       createdAt: _daysAgo(120),
@@ -313,7 +365,7 @@ abstract final class MockData {
       uid: 'user_joao',
       name: 'João Lima',
       email: 'joao.lima@example.com',
-      photoUrl: _img('user-joao'),
+      photoUrl: _userPhoto('user_joao'),
       subscriptionTier: SubscriptionTier.free.wireKey,
       followingProducerIds: const ['prod_amazonia_cacau'],
       createdAt: _daysAgo(64),
@@ -379,7 +431,7 @@ abstract final class MockData {
       name: name,
       byproductCategory: category.wireKey,
       description: description,
-      photoUrls: [_img(id)],
+      photoUrls: _productPhotos(id),
       qualitySeals: seals,
       originLotId: 'lot_$id',
       rating: rating,
@@ -405,7 +457,7 @@ abstract final class MockData {
       text: text,
       createdAt: _daysAgo(createdDaysAgo),
       userName: userName,
-      userPhotoUrl: _img('user-${userId.split('_').last}'),
+      userPhotoUrl: _userPhoto(userId),
     );
   }
 }
