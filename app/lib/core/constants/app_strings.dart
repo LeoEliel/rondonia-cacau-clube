@@ -27,6 +27,10 @@ abstract final class AppStrings {
   static const String club = 'Clube do Cacau';
   static const String profile = 'Perfil';
 
+  // Home header
+  static const String homeWelcome = 'Você está no Rondônia Cacau Clube!';
+  static const String notificationsComingSoon = 'Notificações — em breve.';
+
   // Onboarding
   static const String onboardingTag = 'fazenda agroflorestal · Rondônia';
   static const String onboardingTitle1 = 'Descubra o cacau de Rondônia';
@@ -46,7 +50,8 @@ abstract final class AppStrings {
 
   // Auth
   static const String loginTitle = 'Bem-vindo de volta';
-  static const String loginSubtitle = 'Entre para acompanhar produtores e o Clube.';
+  static const String loginSubtitle =
+      'Entre para acompanhar produtores e o Clube.';
   static const String signupTitle = 'Criar sua conta';
   static const String signupSubtitle =
       'Junte-se ao Clube e acompanhe a floresta de perto.';
