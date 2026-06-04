@@ -10,4 +10,7 @@ Thumbs.db
 # Node (not used, but guard against tooling)
 node_modules/
 
+# Claude Code local harness state (not shared)
+.claude/
+
 # The Flutter app keeps its own .gitignore in app/ for build artifacts.
