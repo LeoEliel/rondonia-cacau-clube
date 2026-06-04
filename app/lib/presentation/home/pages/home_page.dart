@@ -122,6 +122,7 @@ class _CatalogView extends StatelessWidget {
                     onTap: () => Get.toNamed(
                       AppRoutes.productDetail,
                       arguments: featured.id,
+                      parameters: {'id': featured.id},
                     ),
                   ),
                 ],
@@ -196,6 +197,7 @@ class _CatalogView extends StatelessWidget {
                     onTap: () => Get.toNamed(
                       AppRoutes.productDetail,
                       arguments: product.id,
+                      parameters: {'id': product.id},
                     ),
                   );
                 },

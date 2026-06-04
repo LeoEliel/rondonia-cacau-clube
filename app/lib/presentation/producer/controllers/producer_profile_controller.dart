@@ -64,6 +64,14 @@ class ProducerProfileController extends GetxController {
   Future<void> load() async {
     _status.value = ProducerStatus.loading;
 
+    // No id (e.g. a web refresh / deep link that lost its route args) → show a
+    // friendly not-found state instead of querying Firestore with an empty id.
+    if (producerId.isEmpty) {
+      _error.value = 'Produtor não encontrado.';
+      _status.value = ProducerStatus.error;
+      return;
+    }
+
     final producerResult = await _getProducerById(producerId);
     final producer = producerResult.fold<Producer?>(
       (failure) {

@@ -203,6 +203,12 @@ class _Header extends StatelessWidget {
               aggregateRating: product.rating,
               aggregateCount: product.reviewCount,
             ),
+            parameters: {
+              'id': product.id,
+              'name': product.name,
+              'rating': product.rating.toString(),
+              'count': product.reviewCount.toString(),
+            },
           ),
           borderRadius: AppRadii.brSm,
           child: Padding(
@@ -358,6 +364,7 @@ class _ProducerLinkCard extends StatelessWidget {
             onPressed: () => Get.toNamed(
               AppRoutes.producer,
               arguments: producer.id,
+              parameters: {'id': producer.id},
             ),
             child: const Text('Ver perfil'),
           ),

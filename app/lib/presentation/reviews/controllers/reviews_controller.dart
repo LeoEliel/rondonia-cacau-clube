@@ -18,6 +18,15 @@ class ReviewsArgs {
     required this.aggregateCount,
   });
 
+  /// Rebuilds the args from route URL parameters — used when the in-memory
+  /// route argument is gone (e.g. after a web refresh / back navigation).
+  factory ReviewsArgs.fromParams(Map<String, String?> params) => ReviewsArgs(
+        productId: params['id'] ?? '',
+        productName: params['name'] ?? '',
+        aggregateRating: double.tryParse(params['rating'] ?? '') ?? 0,
+        aggregateCount: int.tryParse(params['count'] ?? '') ?? 0,
+      );
+
   final String productId;
   final String productName;
   final double aggregateRating;

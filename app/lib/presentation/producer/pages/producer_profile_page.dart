@@ -612,6 +612,7 @@ class _ProductsSection extends StatelessWidget {
                     onTap: () => Get.toNamed(
                       AppRoutes.productDetail,
                       arguments: product.id,
+                      parameters: {'id': product.id},
                     ),
                   );
                 },

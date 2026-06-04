@@ -54,6 +54,14 @@ class ProductDetailController extends GetxController {
   Future<void> load() async {
     _status.value = DetailStatus.loading;
 
+    // No id (e.g. a web refresh / deep link that lost its route args) → show a
+    // friendly not-found state instead of querying Firestore with an empty id.
+    if (productId.isEmpty) {
+      _error.value = 'Produto não encontrado.';
+      _status.value = DetailStatus.error;
+      return;
+    }
+
     final productResult = await _getProductById(productId);
     final product = productResult.fold<Product?>(
       (failure) {
