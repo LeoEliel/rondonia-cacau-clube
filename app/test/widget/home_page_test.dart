@@ -1,9 +1,15 @@
+import 'package:app/core/session/session_controller.dart';
 import 'package:app/core/theme/app_theme.dart';
 import 'package:app/domain/core/failure.dart';
 import 'package:app/domain/core/result.dart';
 import 'package:app/domain/entities/product.dart';
+import 'package:app/domain/usecases/follow_producer.dart';
+import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_producers.dart';
 import 'package:app/domain/usecases/get_products.dart';
+import 'package:app/domain/usecases/get_user.dart';
+import 'package:app/domain/usecases/sign_out.dart';
+import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/home/controllers/home_controller.dart';
 import 'package:app/presentation/home/pages/home_page.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +37,18 @@ void main() {
     Get.put<HomeController>(HomeController(
       GetProducts(productRepo),
       GetProducers(producerRepo),
+    ));
+
+    // HomeAppHeader reads identity from the session, so the page needs one
+    // registered even when nobody is signed in (anonymous → greets generically).
+    final authRepo = FakeAuthRepository()..currentUserResult = success(null);
+    final userRepo = FakeUserRepository();
+    Get.put<SessionController>(SessionController(
+      GetCurrentUser(authRepo),
+      GetUser(userRepo),
+      SignOut(authRepo),
+      FollowProducer(userRepo),
+      UnfollowProducer(userRepo),
     ));
   }
 
