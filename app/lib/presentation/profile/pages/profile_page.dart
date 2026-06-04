@@ -116,7 +116,7 @@ class ProfilePage extends GetView<ProfileController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: AppRadii.brMd,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -153,7 +153,7 @@ class ProfilePage extends GetView<ProfileController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: AppRadii.brMd,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
@@ -178,9 +178,9 @@ class ProfilePage extends GetView<ProfileController> {
     return Material(
       color: theme.colorScheme.surface,
       clipBehavior: Clip.antiAlias,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: AppRadii.brMd,
-        side: BorderSide(color: AppColors.line),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
       ),
       child: Obx(
         () => SwitchListTile(

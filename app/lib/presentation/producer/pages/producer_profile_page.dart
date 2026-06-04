@@ -58,6 +58,7 @@ class _ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final producer = controller.producer!;
+    final cs = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
@@ -77,7 +78,7 @@ class _ProfileView extends StatelessWidget {
               children: [
                 _TypeChip(type: producer.type.label, verified: true),
                 const SizedBox(height: AppSpacing.md),
-                Text(producer.name, style: AppTypography.title(AppColors.text)),
+                Text(producer.name, style: AppTypography.title(cs.onSurface)),
                 const SizedBox(height: AppSpacing.md),
                 _MetaRow(producer: producer),
                 const SizedBox(height: AppSpacing.xl),
@@ -213,15 +214,16 @@ class _CoverChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Center(
       child: Container(
         padding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: AppColors.surface.withValues(alpha: 0.9),
+          color: cs.surface.withValues(alpha: 0.9),
           borderRadius: AppRadii.brPill,
         ),
-        child: Text(label, style: AppTypography.meta(AppColors.text2)),
+        child: Text(label, style: AppTypography.meta(cs.onSurfaceVariant)),
       ),
     );
   }
@@ -242,7 +244,8 @@ class _Avatar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.greenTint,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.surface, width: 4),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.surface, width: 4),
       ),
       child: Text(
         initials,
@@ -260,8 +263,9 @@ class _CircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Material(
-      color: AppColors.surface,
+      color: cs.surface,
       shape: const CircleBorder(),
       elevation: 1,
       child: InkWell(
@@ -270,7 +274,7 @@ class _CircleButton extends StatelessWidget {
         child: SizedBox(
           width: 40,
           height: 40,
-          child: Icon(icon, size: 20, color: AppColors.choco900),
+          child: Icon(icon, size: 20, color: cs.onSurface),
         ),
       ),
     );
@@ -313,16 +317,17 @@ class _MetaRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
-        const Icon(Icons.place_outlined, size: 16, color: AppColors.text3),
+        Icon(Icons.place_outlined, size: 16, color: cs.outline),
         const SizedBox(width: 4),
         Flexible(
           child: Text(
             '${producer.municipality}, Rondônia',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTypography.meta(AppColors.text2),
+            style: AppTypography.meta(cs.onSurfaceVariant),
           ),
         ),
         const SizedBox(width: AppSpacing.md),
@@ -366,11 +371,12 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: AppTypography.section(AppColors.text)),
-        Text(label, style: AppTypography.meta(AppColors.text2)),
+        Text(value, style: AppTypography.section(cs.onSurface)),
+        Text(label, style: AppTypography.meta(cs.onSurfaceVariant)),
       ],
     );
   }
@@ -432,7 +438,8 @@ class _StorySection extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         Text(
           '“${producer.story}”',
-          style: AppTypography.story(AppColors.text2),
+          style: AppTypography.story(
+              Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -473,12 +480,13 @@ class _CertChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cs.surface,
         borderRadius: AppRadii.brPill,
-        border: Border.all(color: AppColors.line2),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -486,7 +494,7 @@ class _CertChip extends StatelessWidget {
           const Icon(Icons.workspace_premium_outlined,
               size: 14, color: AppColors.caramel),
           const SizedBox(width: 5),
-          Text(label, style: AppTypography.seal(AppColors.text2)),
+          Text(label, style: AppTypography.seal(cs.onSurfaceVariant)),
         ],
       ),
     );
@@ -553,6 +561,7 @@ class _ProductsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final producer = controller.producer!;
     final products = controller.products;
+    final cs = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +571,7 @@ class _ProductsSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Text('Produtos', style: AppTypography.section(AppColors.text)),
+            Text('Produtos', style: AppTypography.section(cs.onSurface)),
             Text(
               '${products.length} ${products.length == 1 ? 'item' : 'itens'}',
               style: AppTypography.meta(AppColors.amberDeep),
@@ -573,7 +582,7 @@ class _ProductsSection extends StatelessWidget {
         if (products.isEmpty)
           Text(
             'Nenhum produto cadastrado ainda.',
-            style: AppTypography.body(AppColors.text3),
+            style: AppTypography.body(cs.outline),
           )
         else
           GridView.builder(

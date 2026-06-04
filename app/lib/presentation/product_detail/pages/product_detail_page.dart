@@ -68,6 +68,7 @@ class _DetailView extends StatelessWidget {
     final product = controller.product!;
     final producer = controller.producer;
     final lot = controller.originLot;
+    final cs = Theme.of(context).colorScheme;
 
     return Stack(
       children: [
@@ -107,7 +108,7 @@ class _DetailView extends StatelessWidget {
                     ],
                     Text(
                       product.description,
-                      style: AppTypography.body(AppColors.text2),
+                      style: AppTypography.body(cs.onSurfaceVariant),
                     ),
                     if (controller.hasTraceability) ...[
                       const SizedBox(height: AppSpacing.sect),
@@ -122,7 +123,7 @@ class _DetailView extends StatelessWidget {
                     Center(
                       child: Text(
                         'Vitrine de origem · sem venda no app.',
-                        style: AppTypography.meta(AppColors.text3),
+                        style: AppTypography.meta(cs.outline),
                       ),
                     ),
                   ],
@@ -182,6 +183,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -190,7 +192,7 @@ class _Header extends StatelessWidget {
           style: AppTypography.overline(AppColors.amberDeep),
         ),
         const SizedBox(height: 6),
-        Text(product.name, style: AppTypography.title(AppColors.text)),
+        Text(product.name, style: AppTypography.title(cs.onSurface)),
         const SizedBox(height: AppSpacing.md),
         InkWell(
           onTap: () => Get.toNamed(
@@ -211,11 +213,11 @@ class _Header extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
                 Text(
                   '${product.reviewCount} avaliações',
-                  style: AppTypography.meta(AppColors.text2),
+                  style: AppTypography.meta(cs.onSurfaceVariant),
                 ),
                 const SizedBox(width: 2),
-                const Icon(Icons.chevron_right_rounded,
-                    size: 18, color: AppColors.text3),
+                Icon(Icons.chevron_right_rounded,
+                    size: 18, color: cs.outline),
               ],
             ),
           ),
@@ -233,6 +235,7 @@ class _TraceabilitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -242,7 +245,7 @@ class _TraceabilitySection extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Text(
               'Rastreabilidade',
-              style: AppTypography.section(AppColors.text),
+              style: AppTypography.section(cs.onSurface),
             ),
           ],
         ),
@@ -271,15 +274,15 @@ class _TraceabilitySection extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         Text(
           'Da floresta ao pote',
-          style: AppTypography.bodyBold(AppColors.text),
+          style: AppTypography.bodyBold(cs.onSurface),
         ),
         const SizedBox(height: AppSpacing.lg),
         Container(
           padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: cs.surface,
             borderRadius: AppRadii.brLg,
-            border: Border.all(color: AppColors.line),
+            border: Border.all(color: cs.outlineVariant),
           ),
           child: OriginTimeline(events: lot.timeline),
         ),
@@ -297,12 +300,13 @@ class _ProducerLinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cs.surface,
         borderRadius: AppRadii.brLg,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         children: [
@@ -329,18 +333,18 @@ class _ProducerLinkCard extends StatelessWidget {
               children: [
                 Text(
                   producer.type.label.toUpperCase(),
-                  style: AppTypography.overline(AppColors.text3),
+                  style: AppTypography.overline(cs.outline),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   producer.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodyBold(AppColors.text),
+                  style: AppTypography.bodyBold(cs.onSurface),
                 ),
                 Text(
                   '${producer.municipality} · RO',
-                  style: AppTypography.meta(AppColors.text2),
+                  style: AppTypography.meta(cs.onSurfaceVariant),
                 ),
               ],
             ),
@@ -372,12 +376,13 @@ class _FactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: cs.surfaceContainerLow,
         borderRadius: AppRadii.brMd,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,12 +393,12 @@ class _FactCard extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label.toUpperCase(),
-                style: AppTypography.overline(AppColors.text3),
+                style: AppTypography.overline(cs.outline),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(value, style: AppTypography.bodyBold(AppColors.text)),
+          Text(value, style: AppTypography.bodyBold(cs.onSurface)),
         ],
       ),
     );

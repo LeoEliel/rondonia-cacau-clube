@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/category_labels.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
@@ -25,7 +24,7 @@ class FilterSheet extends StatelessWidget {
     return Get.bottomSheet(
       FilterSheet(controller: controller),
       isScrollControlled: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: Get.theme.colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xl)),
       ),
@@ -34,6 +33,7 @@ class FilterSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Padding(
@@ -53,7 +53,7 @@ class FilterSheet extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.line2,
+                  color: cs.outlineVariant,
                   borderRadius: AppRadii.brPill,
                 ),
               ),
@@ -61,7 +61,7 @@ class FilterSheet extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Filtros', style: AppTypography.title(AppColors.text)),
+                Text('Filtros', style: AppTypography.title(cs.onSurface)),
                 Obx(() => TextButton(
                       onPressed: controller.hasActiveFilters
                           ? controller.clearFilters
@@ -168,7 +168,8 @@ class _Section extends StatelessWidget {
         children: [
           Text(
             title.toUpperCase(),
-            style: AppTypography.overline(AppColors.text3),
+            style: AppTypography.overline(
+                Theme.of(context).colorScheme.outline),
           ),
           const SizedBox(height: AppSpacing.md),
           child,

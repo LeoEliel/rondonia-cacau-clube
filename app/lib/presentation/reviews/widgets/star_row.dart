@@ -50,7 +50,7 @@ class _Star extends StatelessWidget {
     final icon = Icon(
       filled ? Icons.star_rounded : Icons.star_outline_rounded,
       size: size,
-      color: filled ? AppColors.amber : AppColors.line2,
+      color: filled ? AppColors.amber : Theme.of(context).colorScheme.outlineVariant,
     );
     if (onTap == null) return Padding(padding: const EdgeInsets.all(1), child: icon);
     return InkResponse(

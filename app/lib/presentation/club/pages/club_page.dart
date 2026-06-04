@@ -89,7 +89,7 @@ class ClubPage extends GetView<ClubController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: AppRadii.brLg,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

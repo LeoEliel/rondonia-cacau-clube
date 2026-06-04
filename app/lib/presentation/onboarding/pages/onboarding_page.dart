@@ -94,7 +94,7 @@ class OnboardingPage extends GetView<OnboardingController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: AppRadii.brPill,
-        border: Border.all(color: AppColors.line2),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Text(
         AppStrings.onboardingTag,
@@ -117,7 +117,7 @@ class OnboardingPage extends GetView<OnboardingController> {
               decoration: BoxDecoration(
                 color: controller.page.value == i
                     ? theme.colorScheme.primary
-                    : AppColors.line2,
+                    : theme.colorScheme.outlineVariant,
                 borderRadius: AppRadii.brPill,
               ),
             ),

@@ -44,6 +44,7 @@ class _TimelineNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -65,7 +66,7 @@ class _TimelineNode extends StatelessWidget {
                 Expanded(
                   child: Container(
                     width: 2,
-                    color: AppColors.line2,
+                    color: cs.outlineVariant,
                   ),
                 ),
             ],
@@ -80,12 +81,12 @@ class _TimelineNode extends StatelessWidget {
                 children: [
                   Text(
                     event.title,
-                    style: AppTypography.bodyBold(AppColors.text),
+                    style: AppTypography.bodyBold(cs.onSurface),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     event.description,
-                    style: AppTypography.body(AppColors.text2),
+                    style: AppTypography.body(cs.onSurfaceVariant),
                   ),
                   const SizedBox(height: 6),
                   Text(

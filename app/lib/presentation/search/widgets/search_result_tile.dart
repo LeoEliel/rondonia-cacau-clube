@@ -25,11 +25,12 @@ class SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: cs.surface,
           borderRadius: AppRadii.brLg,
           boxShadow: AppElevation.e1,
         ),
@@ -57,20 +58,20 @@ class SearchResultTile extends StatelessWidget {
                       product.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.productName(AppColors.text),
+                      style: AppTypography.productName(cs.onSurface),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.place_outlined,
-                            size: 14, color: AppColors.text3),
+                        Icon(Icons.place_outlined,
+                            size: 14, color: cs.outline),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             municipality,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTypography.meta(AppColors.text2),
+                            style: AppTypography.meta(cs.onSurfaceVariant),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.sm),
@@ -81,9 +82,9 @@ class SearchResultTile extends StatelessWidget {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(right: AppSpacing.sm),
-              child: Icon(Icons.chevron_right_rounded, color: AppColors.text3),
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.sm),
+              child: Icon(Icons.chevron_right_rounded, color: cs.outline),
             ),
           ],
         ),

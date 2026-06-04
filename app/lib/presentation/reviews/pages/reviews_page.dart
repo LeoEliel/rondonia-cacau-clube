@@ -60,6 +60,7 @@ class _ReviewsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reviews = controller.reviews;
+    final cs = Theme.of(context).colorScheme;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -78,14 +79,14 @@ class _ReviewsView extends StatelessWidget {
             padding: const EdgeInsets.only(top: AppSpacing.xl),
             child: Text(
               'Seja o primeiro a avaliar este produto.',
-              style: AppTypography.body(AppColors.text3),
+              style: AppTypography.body(cs.onSurfaceVariant),
             ),
           )
         else
           for (var i = 0; i < reviews.length; i++) ...[
             _ReviewTile(review: reviews[i]),
             if (i != reviews.length - 1)
-              const Divider(height: AppSpacing.sect, color: AppColors.line),
+              Divider(height: AppSpacing.sect, color: cs.outlineVariant),
           ],
       ],
     );
@@ -99,12 +100,13 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cs.surface,
         borderRadius: AppRadii.brLg,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,7 +116,7 @@ class _SummaryCard extends StatelessWidget {
             children: [
               Text(
                 controller.averageRating.toStringAsFixed(1),
-                style: AppTypography.display(AppColors.text),
+                style: AppTypography.display(cs.onSurface),
               ),
               StarRow(
                 rating: controller.averageRating.round(),
@@ -123,7 +125,7 @@ class _SummaryCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '${controller.totalCount} avaliações',
-                style: AppTypography.meta(AppColors.text2),
+                style: AppTypography.meta(cs.onSurfaceVariant),
               ),
             ],
           ),
@@ -167,9 +169,10 @@ class _HistogramRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Text('$star', style: AppTypography.meta(AppColors.text2)),
+        Text('$star', style: AppTypography.meta(cs.onSurfaceVariant)),
         const SizedBox(width: 4),
         const Icon(Icons.star_rounded, size: 12, color: AppColors.amber),
         const SizedBox(width: AppSpacing.sm),
@@ -179,7 +182,7 @@ class _HistogramRow extends StatelessWidget {
             child: LinearProgressIndicator(
               value: fraction,
               minHeight: 6,
-              backgroundColor: AppColors.surface3,
+              backgroundColor: cs.surfaceContainerHighest,
               valueColor:
                   const AlwaysStoppedAnimation<Color>(AppColors.amber),
             ),
@@ -344,6 +347,7 @@ class _ReviewTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = review.userName ?? 'Anônimo';
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -356,10 +360,10 @@ class _ReviewTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppTypography.bodyBold(AppColors.text)),
+                  Text(name, style: AppTypography.bodyBold(cs.onSurface)),
                   Text(
                     BrDates.relative(review.createdAt),
-                    style: AppTypography.meta(AppColors.text3),
+                    style: AppTypography.meta(cs.outline),
                   ),
                 ],
               ),
@@ -368,7 +372,7 @@ class _ReviewTile extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
-        Text(review.text, style: AppTypography.body(AppColors.text2)),
+        Text(review.text, style: AppTypography.body(cs.onSurfaceVariant)),
       ],
     );
   }

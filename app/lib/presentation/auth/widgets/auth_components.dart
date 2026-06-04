@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_strings.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/brand_mark.dart';
@@ -154,11 +153,13 @@ class GoogleSignInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return OutlinedButton.icon(
       onPressed: enabled ? onPressed : null,
       style: OutlinedButton.styleFrom(
-        backgroundColor: AppColors.surface,
-        side: const BorderSide(color: AppColors.line2),
+        backgroundColor: scheme.surface,
+        foregroundColor: scheme.onSurface,
+        side: BorderSide(color: scheme.outlineVariant),
       ),
       icon: const _GoogleGlyph(),
       label: const Text(AppStrings.continueWithGoogle),
@@ -194,7 +195,7 @@ class _GoogleGlyph extends StatelessWidget {
       style: TextStyle(
         fontSize: 19,
         fontWeight: FontWeight.w700,
-        color: AppColors.choco900,
+        color: Theme.of(context).colorScheme.onSurface,
         letterSpacing: 0,
       ),
     );

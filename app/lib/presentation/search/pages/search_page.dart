@@ -73,29 +73,30 @@ class _SearchFieldState extends State<_SearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cs.surface,
         borderRadius: AppRadii.brPill,
         boxShadow: AppElevation.e1,
       ),
       child: Row(
         children: [
-          const Icon(Icons.search, color: AppColors.text3),
+          Icon(Icons.search, color: cs.outline),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: TextField(
               controller: _text,
               onChanged: widget.controller.setText,
               textInputAction: TextInputAction.search,
-              style: AppTypography.body(AppColors.text),
+              style: AppTypography.body(cs.onSurface),
               decoration: InputDecoration(
                 isCollapsed: true,
                 border: InputBorder.none,
                 hintText: 'Buscar mel, nibs, produtores…',
-                hintStyle: AppTypography.body(AppColors.text3),
+                hintStyle: AppTypography.body(cs.outline),
               ),
             ),
           ),
@@ -106,8 +107,8 @@ class _SearchFieldState extends State<_SearchField> {
                     _text.clear();
                     widget.controller.clearText();
                   },
-                  child: const Icon(Icons.close_rounded,
-                      color: AppColors.text3, size: 20),
+                  child: Icon(Icons.close_rounded,
+                      color: cs.outline, size: 20),
                 )),
         ],
       ),
@@ -175,13 +176,15 @@ class _FiltersButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = count > 0;
+    final cs = Theme.of(context).colorScheme;
+    final idleInk = cs.onSurface;
     return Material(
-      color: active ? AppColors.amber : AppColors.surface,
+      color: active ? AppColors.amber : cs.surface,
       shape: RoundedRectangleBorder(
         borderRadius: AppRadii.brPill,
         side: active
             ? BorderSide.none
-            : const BorderSide(color: AppColors.line2),
+            : BorderSide(color: cs.outlineVariant),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -192,12 +195,12 @@ class _FiltersButton extends StatelessWidget {
             children: [
               Icon(Icons.tune_rounded,
                   size: 18,
-                  color: active ? Colors.white : AppColors.choco900),
+                  color: active ? Colors.white : idleInk),
               const SizedBox(width: 6),
               Text(
                 count > 0 ? 'Filtros ($count)' : 'Filtros',
                 style: AppTypography.bodyBold(
-                    active ? Colors.white : AppColors.choco900),
+                    active ? Colors.white : idleInk),
               ),
             ],
           ),
@@ -258,7 +261,8 @@ class _ResultsHeader extends StatelessWidget {
           children: [
             Text(
               '$n ${n == 1 ? 'resultado' : 'resultados'}',
-              style: AppTypography.bodyBold(AppColors.text),
+              style: AppTypography.bodyBold(
+                  Theme.of(context).colorScheme.onSurface),
             ),
             GestureDetector(
               onTap: controller.cycleSort,

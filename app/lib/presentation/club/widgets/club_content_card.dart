@@ -21,7 +21,7 @@ class ClubContentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: AppRadii.brMd,
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
       child: Row(
         children: [
