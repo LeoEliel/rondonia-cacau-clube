@@ -18,7 +18,7 @@ import '../../../domain/entities/producer.dart';
 import '../../../domain/entities/product.dart';
 import '../../reviews/controllers/reviews_controller.dart';
 import '../controllers/product_detail_controller.dart';
-import '../widgets/origin_map_stub.dart';
+import '../widgets/origin_map.dart';
 import '../widgets/origin_timeline.dart';
 import '../widgets/product_gallery.dart';
 
@@ -287,7 +287,11 @@ class _TraceabilitySection extends StatelessWidget {
           child: OriginTimeline(events: lot.timeline),
         ),
         const SizedBox(height: AppSpacing.lg),
-        OriginMapStub(municipality: '${lot.municipality}, RO'),
+        OriginMap(
+          latitude: lot.geo.latitude,
+          longitude: lot.geo.longitude,
+          label: '${lot.municipality}, RO',
+        ),
       ],
     );
   }
