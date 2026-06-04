@@ -9,9 +9,10 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/brand_mark.dart';
 import '../controllers/onboarding_controller.dart';
 
-/// First-run welcome carousel (design 01). Introduces the app over three
-/// swipeable slides and routes into sign-up ("Começar") or sign-in
-/// ("Já tenho conta").
+/// First-run welcome carousel (design 01). The hero rotates cocoa cover photos
+/// (cropped to fill, auto-advancing) under a soft brand veil with the cacao
+/// mark; the headline carousel and dots stay in sync. Routes into sign-up
+/// ("Começar") or sign-in ("Já tenho conta").
 class OnboardingPage extends GetView<OnboardingController> {
   const OnboardingPage({super.key});
 
@@ -71,17 +72,62 @@ class OnboardingPage extends GetView<OnboardingController> {
     );
   }
 
+  /// Rotating cover photo for the current slide, cross-fading on advance, with
+  /// the soft brand gradient veil and the cacao mark overlapping it.
   Widget _hero() {
-    return Container(
+    return Obx(() {
+      final index = controller.page.value;
+      final slide = OnboardingController.slides[index];
+      return AnimatedSwitcher(
+        duration: const Duration(milliseconds: 450),
+        child: _heroCard(slide, key: ValueKey(index)),
+      );
+    });
+  }
+
+  Widget _heroCard(OnboardingSlide slide, {required Key key}) {
+    return ClipRRect(
+      key: key,
+      borderRadius: AppRadii.brXl,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            slide.coverUrl,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, progress) =>
+                progress == null ? child : _heroFallback(),
+            errorBuilder: (context, error, stack) => _heroFallback(),
+          ),
+          // Soft brand veil over the photo (the same cocoa "degradê").
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.greenTint.withValues(alpha: 0.30),
+                  AppColors.surface3.withValues(alpha: 0.55),
+                ],
+              ),
+            ),
+          ),
+          const Center(child: BrandMark(size: 92)),
+        ],
+      ),
+    );
+  }
+
+  /// Cocoa-toned placeholder while a cover loads or if it fails.
+  Widget _heroFallback() {
+    return const DecoratedBox(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [AppColors.greenTint, AppColors.surface3],
         ),
-        borderRadius: AppRadii.brXl,
       ),
-      child: const Center(child: BrandMark(size: 92)),
     );
   }
 
