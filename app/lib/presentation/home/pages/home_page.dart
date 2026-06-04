@@ -21,10 +21,6 @@ class HomePage extends GetView<HomeController> {
 
   static const double _pad = AppSpacing.pad;
 
-  /// Max width a catalog card is allowed to grow to before the grid adds
-  /// another column — keeps cards from ballooning on wide web windows.
-  static const double _maxCardWidth = 260;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +89,7 @@ class _CatalogView extends StatelessWidget {
     // tile is then sized to the card's own content height (photo + text block)
     // so there is no empty band beneath the card.
     final gridWidth = MediaQuery.sizeOf(context).width - HomePage._pad * 2;
-    final columns = (gridWidth / HomePage._maxCardWidth).ceil().clamp(2, 6);
+    final columns = ProductCard.columnsFor(gridWidth);
     final tileWidth = (gridWidth - AppSpacing.gap * (columns - 1)) / columns;
     final cardExtent = ProductCard.extentFor(tileWidth);
 

@@ -34,6 +34,15 @@ class ProductCard extends StatefulWidget {
   /// being stretched to a fixed aspect ratio.
   static const double contentHeight = 132;
 
+  /// Max width a card grows to before the grid adds another column.
+  static const double maxWidth = 260;
+
+  /// Column count for a product grid [gridWidth] px wide: keeps cards within
+  /// [maxWidth], clamped to 2–6 columns so the layout stays sensible from phone
+  /// to wide desktop.
+  static int columnsFor(double gridWidth) =>
+      (gridWidth / maxWidth).ceil().clamp(2, 6);
+
   /// Tile height for a card rendered at [tileWidth]: photo (sized by
   /// [imageAspect]) plus the fixed [contentHeight].
   static double extentFor(double tileWidth) =>

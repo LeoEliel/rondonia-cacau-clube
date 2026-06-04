@@ -585,27 +585,36 @@ class _ProductsSection extends StatelessWidget {
             style: AppTypography.body(cs.outline),
           )
         else
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            itemCount: products.length,
-            gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppSpacing.gap,
-              crossAxisSpacing: AppSpacing.gap,
-              childAspectRatio: 0.62,
-            ),
-            itemBuilder: (context, i) {
-              final product = products[i];
-              return ProductCard(
-                product: product,
-                municipality: producer.municipality,
-                onTap: () => Get.toNamed(
-                  AppRoutes.productDetail,
-                  arguments: product.id,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Responsive, content-hugging grid (shared sizing with the
+              // catalog) so tiles don't carry an empty band on wide layouts.
+              final gridWidth = constraints.maxWidth;
+              final columns = ProductCard.columnsFor(gridWidth);
+              final tileWidth =
+                  (gridWidth - AppSpacing.gap * (columns - 1)) / columns;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: products.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: AppSpacing.gap,
+                  crossAxisSpacing: AppSpacing.gap,
+                  mainAxisExtent: ProductCard.extentFor(tileWidth),
                 ),
+                itemBuilder: (context, i) {
+                  final product = products[i];
+                  return ProductCard(
+                    product: product,
+                    municipality: producer.municipality,
+                    onTap: () => Get.toNamed(
+                      AppRoutes.productDetail,
+                      arguments: product.id,
+                    ),
+                  );
+                },
               );
             },
           ),
