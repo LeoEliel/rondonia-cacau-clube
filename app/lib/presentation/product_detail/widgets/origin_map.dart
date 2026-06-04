@@ -9,10 +9,12 @@ import '../../../core/theme/app_typography.dart';
 
 /// Origin map for the traceability section.
 ///
-/// Renders OpenStreetMap tiles (no API key / billing) centered on the harvest
-/// lot's coordinate with a dropped pin. Non-interactive on purpose — this is an
-/// origin *vitrine*, not a navigable map — so it reads as "here is where it
-/// comes from" rather than inviting pan/zoom.
+/// Renders Esri World Imagery satellite tiles (no API key / billing) centered on
+/// the harvest lot's coordinate with a dropped pin. We use Esri rather than the
+/// OpenStreetMap tile server because OSM blocks browser requests (no settable
+/// User-Agent on web) under its tile usage policy. Non-interactive on purpose —
+/// this is an origin *vitrine*, not a navigable map — so it reads as "here is
+/// where it comes from" rather than inviting pan/zoom.
 class OriginMap extends StatelessWidget {
   const OriginMap({
     super.key,
@@ -48,9 +50,11 @@ class OriginMap extends StatelessWidget {
                 ),
                 children: [
                   TileLayer(
+                    // Esri World Imagery (satellite). Keyless and CORS-enabled
+                    // for web; Esri tile order is {z}/{y}/{x}.
                     urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    // OSM tile usage policy: identify the app.
+                        'https://server.arcgisonline.com/ArcGIS/rest/services/'
+                        'World_Imagery/MapServer/tile/{z}/{y}/{x}',
                     userAgentPackageName: 'br.com.rondoniacacauclube.app',
                   ),
                   MarkerLayer(
@@ -93,6 +97,20 @@ class OriginMap extends StatelessWidget {
                 child: Text(
                   label,
                   style: AppTypography.meta(AppColors.choco900),
+                ),
+              ),
+            ),
+            // Tile attribution (Esri terms).
+            Positioned(
+              right: 6,
+              bottom: 4,
+              child: Text(
+                '© Esri',
+                style: AppTypography.meta(Colors.white).copyWith(
+                  fontSize: 9,
+                  shadows: const [
+                    Shadow(color: Colors.black54, blurRadius: 2),
+                  ],
                 ),
               ),
             ),
