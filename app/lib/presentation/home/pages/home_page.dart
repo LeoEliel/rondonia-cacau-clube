@@ -64,8 +64,8 @@ class _LoadingView extends StatelessWidget {
           Text(
             'Carregando catálogo…',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -81,136 +81,138 @@ class _CatalogView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final featured = controller.featuredProduct;
-    final products = controller.visibleProducts;
 
     // Catalog grid: responsive column count so cards keep a sensible size on
     // wide web windows (2 across on phones, more as the viewport grows). Each
     // tile is then sized to the card's own content height (photo + text block)
-    // so there is no empty band beneath the card.
+    // so there is no empty band beneath the card. (Viewport-only — not
+    // category-dependent, so it stays outside the Obx below.)
     final gridWidth = MediaQuery.sizeOf(context).width - HomePage._pad * 2;
     final columns = ProductCard.columnsFor(gridWidth);
     final tileWidth = (gridWidth - AppSpacing.gap * (columns - 1)) / columns;
     final cardExtent = ProductCard.extentFor(tileWidth);
 
-    return CustomScrollView(
-      slivers: [
-        // Header + search + hero
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              HomePage._pad,
-              AppSpacing.sm,
-              HomePage._pad,
-              0,
-            ),
-            child: Column(
-              children: [
-                const HomeAppHeader(),
-                const SizedBox(height: AppSpacing.lg),
-                CatalogSearchField(onTap: controller.goToSearch),
-                if (featured != null) ...[
-                  const SizedBox(height: AppSpacing.sect),
-                  HeroFeaturedCard(
-                    kicker: 'Em destaque · Safra 2026',
-                    title: 'Mel de cacau,\no ouro da floresta',
-                    seal: featured.qualitySeals.isNotEmpty
-                        ? featured.qualitySeals.first
-                        : null,
-                    municipality:
-                        controller.featuredProducer?.municipality,
-                    onTap: () => Get.toNamed(
-                      AppRoutes.productDetail,
-                      arguments: featured.id,
-                      parameters: {'id': featured.id},
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ),
+    // Selecting a category mutates the visible list + selection on the
+    // controller; observe them here so the chips and grid actually rebuild.
+    return Obx(() {
+      final featured = controller.featuredProduct;
+      final products = controller.visibleProducts;
 
-        // Category chips
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.sect),
-            child: _CategoryChips(controller: controller),
-          ),
-        ),
-
-        // Section header
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              HomePage._pad,
-              AppSpacing.xl,
-              HomePage._pad,
-              AppSpacing.lg,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('Destaques', style: theme.textTheme.headlineMedium),
-                if (controller.selectedCategory != null)
-                  TextButton(
-                    onPressed: controller.clearCategory,
-                    child: const Text('Ver tudo'),
-                  ),
-              ],
-            ),
-          ),
-        ),
-
-        // Grid or empty state
-        if (products.isEmpty)
+      return CustomScrollView(
+        slivers: [
+          // Header + search + hero
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
-              child: AppMessageView(
-                icon: Icons.search_off_rounded,
-                title: 'Nada por aqui ainda',
-                message: 'Nenhum produto nesta categoria.',
-                actionLabel: 'Ver todos',
-                onAction: controller.clearCategory,
+              padding: const EdgeInsets.fromLTRB(
+                HomePage._pad,
+                AppSpacing.sm,
+                HomePage._pad,
+                0,
+              ),
+              child: Column(
+                children: [
+                  const HomeAppHeader(),
+                  const SizedBox(height: AppSpacing.lg),
+                  CatalogSearchField(onTap: controller.goToSearch),
+                  if (featured != null) ...[
+                    const SizedBox(height: AppSpacing.sect),
+                    HeroFeaturedCard(
+                      kicker: 'Em destaque · Safra 2026',
+                      title: 'Mel de cacau,\no ouro da floresta',
+                      seal: featured.qualitySeals.isNotEmpty
+                          ? featured.qualitySeals.first
+                          : null,
+                      municipality: controller.featuredProducer?.municipality,
+                      onTap: () => Get.toNamed(
+                        AppRoutes.productDetail,
+                        arguments: featured.id,
+                        parameters: {'id': featured.id},
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-          )
-        else
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: HomePage._pad),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                mainAxisSpacing: AppSpacing.gap,
-                crossAxisSpacing: AppSpacing.gap,
-                mainAxisExtent: cardExtent,
+          ),
+
+          // Category chips
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sect),
+              child: _CategoryChips(controller: controller),
+            ),
+          ),
+
+          // Section header
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                HomePage._pad,
+                AppSpacing.xl,
+                HomePage._pad,
+                AppSpacing.lg,
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Destaques', style: theme.textTheme.headlineMedium),
+                  if (controller.selectedCategory != null)
+                    TextButton(
+                      onPressed: controller.clearCategory,
+                      child: const Text('Ver tudo'),
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          // Grid or empty state
+          if (products.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
+                child: AppMessageView(
+                  icon: Icons.search_off_rounded,
+                  title: 'Nada por aqui ainda',
+                  message: 'Nenhum produto nesta categoria.',
+                  actionLabel: 'Ver todos',
+                  onAction: controller.clearCategory,
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: HomePage._pad),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisSpacing: AppSpacing.gap,
+                  crossAxisSpacing: AppSpacing.gap,
+                  mainAxisExtent: cardExtent,
+                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
                   final Product product = products[index];
                   return ProductCard(
                     product: product,
-                    municipality:
-                        controller.municipalityFor(product.producerId),
+                    municipality: controller.municipalityFor(
+                      product.producerId,
+                    ),
                     onTap: () => Get.toNamed(
                       AppRoutes.productDetail,
                       arguments: product.id,
                       parameters: {'id': product.id},
                     ),
                   );
-                },
-                childCount: products.length,
+                }, childCount: products.length),
               ),
             ),
-          ),
 
-        const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
-      ],
-    );
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
+        ],
+      );
+    });
   }
-
 }
 
 class _CategoryChips extends StatelessWidget {
