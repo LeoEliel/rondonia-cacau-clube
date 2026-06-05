@@ -66,6 +66,13 @@ class DataBinding extends Bindings {
   /// Toggled with `--dart-define=DEMO=true` to run against in-memory mock data.
   static const bool _demoMode = bool.fromEnvironment('DEMO');
 
+  /// RevenueCat key from `--dart-define=REVENUECAT_API_KEY=…` (empty when
+  /// unset). Mirrors the guard in `main.dart`: the SDK is only ever configured —
+  /// and only ever injected (below) — when a key is supplied.
+  static const String _revenueCatApiKey = String.fromEnvironment(
+    'REVENUECAT_API_KEY',
+  );
+
   @override
   void dependencies() {
     // --- Firebase ---
@@ -140,18 +147,23 @@ class DataBinding extends Bindings {
     }
 
     // --- Purchases (Cocoa Club premium) ---
-    // RevenueCat is mobile-only, so it is injected solely for non-DEMO native
-    // builds. DEMO mode and the non-DEMO **web** build fall back to the
+    // RevenueCat is mobile-only AND must be configured with a key to work, so it
+    // is injected only for a non-DEMO native build that was given a key (the
+    // exact condition under which `main.dart` calls `Purchases.configure`).
+    // Every other case — DEMO, web, or a keyless native run — falls back to the
     // tier-backed adapter (over whichever SubscriptionRepository is registered
-    // above), so the Club CTA works everywhere and the SDK never runs on web.
-    if (_demoMode || kIsWeb) {
+    // above) so the Club CTA stays fully functional and the SDK is never touched
+    // unconfigured.
+    final useRevenueCat =
+        !_demoMode && !kIsWeb && _revenueCatApiKey.isNotEmpty;
+    if (useRevenueCat) {
       Get.lazyPut<PurchasesRepository>(
-        () => TierPurchasesRepository(Get.find<SubscriptionRepository>()),
+        RevenueCatPurchasesRepository.new,
         fenix: true,
       );
     } else {
       Get.lazyPut<PurchasesRepository>(
-        RevenueCatPurchasesRepository.new,
+        () => TierPurchasesRepository(Get.find<SubscriptionRepository>()),
         fenix: true,
       );
     }

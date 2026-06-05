@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required in every build type (the debug/profile manifests only add it
+         for the dev tooling, so release builds would otherwise have no network
+         for Firebase, map tiles, RevenueCat, etc.). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="app"
         android:name="${applicationName}"
