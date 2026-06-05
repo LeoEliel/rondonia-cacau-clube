@@ -63,14 +63,19 @@ class RevenueCatPurchasesRepository implements PurchasesRepository {
       );
       return success(_hasPremium(result.customerInfo));
     } on PlatformException catch (e) {
-      // A deliberate user cancellation is a real outcome, not something to
-      // paper over — surface it instead of granting premium.
+      // Store/purchase errors arrive as a structured PlatformException — these
+      // are real failures (cancelled, declined, unavailable, …), so surface
+      // them instead of granting premium.
       if (PurchasesErrorHelper.getErrorCode(e) ==
           PurchasesErrorCode.purchaseCancelledError) {
         return failure(const ValidationFailure('Compra cancelada.'));
       }
-      return premiumFallbackGrant('PlatformException: ${e.message}');
+      return failure(
+        ServerFailure(e.message ?? 'Não foi possível concluir a compra.'),
+      );
     } catch (e) {
+      // Only a genuinely unexpected (non-store) error reaches here; keep the
+      // local safety net so a prototype demo isn't blocked by an SDK glitch.
       return premiumFallbackGrant(e.toString());
     }
   }
@@ -100,10 +105,11 @@ class RevenueCatPurchasesRepository implements PurchasesRepository {
   bool _hasPremium(CustomerInfo info) =>
       isPremiumEntitlementActive(info.entitlements.active.keys, entitlementId);
 
-  /// Safety net invoked ONLY from the [purchase] catch block: a real Test Store
-  /// purchase is expected to complete, but if the SDK throws unexpectedly we
-  /// unlock premium locally so a prototype demo isn't blocked — and log that we
-  /// took the fallback path. The primary path above never uses this.
+  /// Safety net invoked ONLY for a genuinely unexpected (non-store) error in
+  /// [purchase]: real store failures (cancelled/declined/unavailable) surface as
+  /// failures, but if the SDK throws something unexpected we unlock premium
+  /// locally so a prototype demo isn't blocked — and log that we took the
+  /// fallback path. The primary path above never uses this.
   @visibleForTesting
   Result<bool> premiumFallbackGrant(String reason) {
     developer.log(
