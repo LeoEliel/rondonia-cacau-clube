@@ -6,17 +6,15 @@ import '../repositories/subscription_repository.dart';
 
 /// Changes the user's Cocoa Club tier (mock upgrade/downgrade — no real
 /// payment). Backs the subscribe / manage actions on the Club screen.
-class SetSubscriptionTier implements UseCase<Subscription, SetSubscriptionTierParams> {
+class SetSubscriptionTier
+    implements UseCase<Subscription, SetSubscriptionTierParams> {
   const SetSubscriptionTier(this._repository);
 
   final SubscriptionRepository _repository;
 
   @override
   Future<Result<Subscription>> call(SetSubscriptionTierParams params) =>
-      _repository.setSubscriptionTier(
-        userId: params.userId,
-        tier: params.tier,
-      );
+      _repository.setSubscriptionTier(userId: params.userId, tier: params.tier);
 }
 
 /// Input for [SetSubscriptionTier].

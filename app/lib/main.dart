@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app/cacau_app.dart';
@@ -33,6 +34,19 @@ Future<void> main() async {
           crashlytics.recordError(error, stack, fatal: true);
           return true;
         };
+      }
+
+      // RevenueCat (Cocoa Club purchases) is mobile-only and used only in the
+      // non-DEMO build. Configured with the key from
+      // --dart-define=REVENUECAT_API_KEY; the app user id is set later to the
+      // Firebase uid by the purchases repository (Purchases.logIn). Skipped on
+      // web / demo / when no key is provided, so those builds never touch the
+      // SDK — mirroring the Crashlytics web guard above.
+      const demoMode = bool.fromEnvironment('DEMO');
+      const revenueCatApiKey = String.fromEnvironment('REVENUECAT_API_KEY');
+      if (!kIsWeb && !demoMode && revenueCatApiKey.isNotEmpty) {
+        await Purchases.setLogLevel(LogLevel.warn);
+        await Purchases.configure(PurchasesConfiguration(revenueCatApiKey));
       }
 
       // Analytics instance is created up front so it is ready for screen

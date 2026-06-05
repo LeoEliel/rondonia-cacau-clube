@@ -11,9 +11,9 @@ enum ProducerType {
   final String wireKey;
 
   static ProducerType fromWire(String? key) => values.firstWhere(
-        (e) => e.wireKey == key,
-        orElse: () => ProducerType.producer,
-      );
+    (e) => e.wireKey == key,
+    orElse: () => ProducerType.producer,
+  );
 }
 
 /// Cocoa byproduct category. The catalog is weighted toward [cocoaHoney] and
@@ -36,9 +36,9 @@ enum ByproductCategory {
   final String wireKey;
 
   static ByproductCategory fromWire(String? key) => values.firstWhere(
-        (e) => e.wireKey == key,
-        orElse: () => ByproductCategory.other,
-      );
+    (e) => e.wireKey == key,
+    orElse: () => ByproductCategory.other,
+  );
 }
 
 /// Quality seals / badges shown on products and producers.
@@ -73,9 +73,9 @@ enum SubscriptionTier {
   final String wireKey;
 
   static SubscriptionTier fromWire(String? key) => values.firstWhere(
-        (e) => e.wireKey == key,
-        orElse: () => SubscriptionTier.free,
-      );
+    (e) => e.wireKey == key,
+    orElse: () => SubscriptionTier.free,
+  );
 }
 
 /// Lifecycle of a subscription record.
@@ -88,9 +88,9 @@ enum SubscriptionStatus {
   final String wireKey;
 
   static SubscriptionStatus fromWire(String? key) => values.firstWhere(
-        (e) => e.wireKey == key,
-        orElse: () => SubscriptionStatus.inactive,
-      );
+    (e) => e.wireKey == key,
+    orElse: () => SubscriptionStatus.inactive,
+  );
 }
 
 /// Sort order for catalog queries.

@@ -28,15 +28,17 @@ class InMemoryUserRepository implements UserRepository {
     if (user == null) {
       return failure(NotFoundFailure('Usuário "$uid" não encontrado.'));
     }
-    return success(User(
-      uid: user.uid,
-      name: user.name,
-      email: user.email,
-      photoUrl: user.photoUrl,
-      subscriptionTier: user.subscriptionTier,
-      followingProducerIds: _following[uid]?.toList() ?? const [],
-      createdAt: user.createdAt,
-    ));
+    return success(
+      User(
+        uid: user.uid,
+        name: user.name,
+        email: user.email,
+        photoUrl: user.photoUrl,
+        subscriptionTier: user.subscriptionTier,
+        followingProducerIds: _following[uid]?.toList() ?? const [],
+        createdAt: user.createdAt,
+      ),
+    );
   }
 
   @override

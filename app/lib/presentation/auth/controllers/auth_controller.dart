@@ -92,6 +92,12 @@ class AuthController extends GetxController {
       (failure) => error.value = failure.message,
       (user) async {
         await _session.completeSignIn(user);
+        // The controller is permanent (shared across login/signup), so reset the
+        // form here rather than relying on disposal when leaving the auth flow.
+        nameField.clear();
+        emailField.clear();
+        passwordField.clear();
+        error.value = null;
         Get.offAllNamed(AppRoutes.shell);
       },
     );

@@ -80,6 +80,32 @@ flutter test        # unit + widget tests
 flutter analyze
 ```
 
+### Run modes
+
+The app runs in two modes, selected entirely by `--dart-define` — the same
+binding code serves both (see `lib/core/bindings/data_binding.dart`):
+
+- **DEMO** (offline, in-memory mock data; no Firebase backend or store keys
+  needed). Cocoa Club purchases fall back to a tier-flip mock, so the
+  "Assinar o Clube" flow works without RevenueCat. This Codespace forwards
+  **port 8080** only:
+
+  ```bash
+  flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080 --dart-define=DEMO=true
+  ```
+
+- **Non-DEMO** (real Firebase). On **mobile**, Cocoa Club purchases use
+  RevenueCat; pass the key at build time (never commit it). On **web**,
+  purchases use the same tier fallback as DEMO (RevenueCat is mobile-only):
+
+  ```bash
+  flutter run --dart-define=REVENUECAT_API_KEY=goog_xxx        # Android/iOS
+  flutter run -d web-server --web-port 8080                    # web (no key needed)
+  ```
+
+The RevenueCat SDK is only ever configured on non-DEMO **native** builds with a
+non-empty key; web/DEMO never touch it.
+
 ### Firebase configuration
 
 The Firebase config files contain the project's client API keys and are **not

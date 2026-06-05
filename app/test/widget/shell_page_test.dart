@@ -5,8 +5,11 @@ import 'package:app/domain/usecases/follow_producer.dart';
 import 'package:app/domain/usecases/get_current_user.dart';
 import 'package:app/domain/usecases/get_producers.dart';
 import 'package:app/domain/usecases/get_products.dart';
+import 'package:app/domain/usecases/check_premium.dart';
+import 'package:app/domain/usecases/get_offerings.dart';
 import 'package:app/domain/usecases/get_user.dart';
-import 'package:app/domain/usecases/set_subscription_tier.dart';
+import 'package:app/domain/usecases/purchase_premium.dart';
+import 'package:app/domain/usecases/restore_purchases.dart';
 import 'package:app/domain/usecases/sign_out.dart';
 import 'package:app/domain/usecases/unfollow_producer.dart';
 import 'package:app/presentation/club/controllers/club_controller.dart';
@@ -51,8 +54,15 @@ void main() {
       GetProducts(FakeProductRepository()),
       GetProducers(FakeProducerRepository()),
     ));
+    final purchases = FakePurchasesRepository();
     Get.put<ClubController>(
-      ClubController(session, SetSubscriptionTier(FakeSubscriptionRepository())),
+      ClubController(
+        session,
+        GetOfferings(purchases),
+        PurchasePremium(purchases),
+        RestorePurchases(purchases),
+        CheckPremium(purchases),
+      ),
     );
     Get.put<ProfileController>(ProfileController(session, themeController));
   });

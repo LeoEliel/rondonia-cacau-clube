@@ -25,9 +25,9 @@ class ProductRepositoryImpl implements ProductRepository {
 
   @override
   Future<Result<Product>> getProductById(String id) {
-    return guardFirestore(() async => _mapper.toEntity(
-          await _ds.fetchProductById(id),
-        ));
+    return guardFirestore(
+      () async => _mapper.toEntity(await _ds.fetchProductById(id)),
+    );
   }
 
   @override

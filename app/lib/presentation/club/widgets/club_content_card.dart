@@ -49,8 +49,9 @@ class ClubContentCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${content.category} · ${content.minutes} min',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),

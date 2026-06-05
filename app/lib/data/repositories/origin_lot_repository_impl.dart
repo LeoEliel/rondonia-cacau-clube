@@ -14,8 +14,8 @@ class OriginLotRepositoryImpl implements OriginLotRepository {
 
   @override
   Future<Result<OriginLot>> getOriginLotById(String id) {
-    return guardFirestore(() async => _mapper.toEntity(
-          await _ds.fetchById(id),
-        ));
+    return guardFirestore(
+      () async => _mapper.toEntity(await _ds.fetchById(id)),
+    );
   }
 }

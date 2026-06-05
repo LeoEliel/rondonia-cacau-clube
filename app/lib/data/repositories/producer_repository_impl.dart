@@ -22,8 +22,8 @@ class ProducerRepositoryImpl implements ProducerRepository {
 
   @override
   Future<Result<Producer>> getProducerById(String id) {
-    return guardFirestore(() async => _mapper.toEntity(
-          await _ds.fetchProducerById(id),
-        ));
+    return guardFirestore(
+      () async => _mapper.toEntity(await _ds.fetchProducerById(id)),
+    );
   }
 }

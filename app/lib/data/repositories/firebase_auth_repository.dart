@@ -20,7 +20,7 @@ import '../dtos/user_dto.dart';
 /// deferred until those are provisioned.
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository(this._users, [fb.FirebaseAuth? auth])
-      : _auth = auth ?? fb.FirebaseAuth.instance;
+    : _auth = auth ?? fb.FirebaseAuth.instance;
 
   final fb.FirebaseAuth _auth;
   final UserRemoteDataSource _users;
@@ -75,13 +75,14 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<Result<User>> signInWithGoogle() async {
     if (!kIsWeb) {
-      return failure(const AuthFailure(
-        'Login com Google está disponível apenas na versão web por enquanto.',
-      ));
+      return failure(
+        const AuthFailure(
+          'Login com Google está disponível apenas na versão web por enquanto.',
+        ),
+      );
     }
     try {
-      final credential =
-          await _auth.signInWithPopup(fb.GoogleAuthProvider());
+      final credential = await _auth.signInWithPopup(fb.GoogleAuthProvider());
       final user = _toEntity(credential.user!);
       await _ensureProfile(user);
       return success(user);
@@ -105,13 +106,15 @@ class FirebaseAuthRepository implements AuthRepository {
   /// created on a later sign-in — auth must not fail because of a profile write.
   Future<void> _ensureProfile(User user) async {
     try {
-      await _users.ensureProfile(UserDto(
-        uid: user.uid,
-        name: user.name,
-        email: user.email,
-        photoUrl: user.photoUrl,
-        createdAt: user.createdAt,
-      ));
+      await _users.ensureProfile(
+        UserDto(
+          uid: user.uid,
+          name: user.name,
+          email: user.email,
+          photoUrl: user.photoUrl,
+          createdAt: user.createdAt,
+        ),
+      );
     } catch (_) {
       // Best-effort; ignore (e.g. transient offline write).
     }
@@ -121,14 +124,14 @@ class FirebaseAuthRepository implements AuthRepository {
   /// auth record doesn't hold (tier, following) default to a free, empty state
   /// and are hydrated from Firestore downstream.
   User _toEntity(fb.User u) => User(
-        uid: u.uid,
-        name: u.displayName?.trim().isNotEmpty == true
-            ? u.displayName!.trim()
-            : (u.email?.split('@').first ?? 'Visitante'),
-        email: u.email ?? '',
-        photoUrl: u.photoURL,
-        createdAt: u.metadata.creationTime ?? DateTime.now(),
-      );
+    uid: u.uid,
+    name: u.displayName?.trim().isNotEmpty == true
+        ? u.displayName!.trim()
+        : (u.email?.split('@').first ?? 'Visitante'),
+    email: u.email ?? '',
+    photoUrl: u.photoURL,
+    createdAt: u.metadata.creationTime ?? DateTime.now(),
+  );
 
   AuthFailure _mapError(fb.FirebaseAuthException e) {
     final message = switch (e.code) {
@@ -136,8 +139,7 @@ class FirebaseAuthRepository implements AuthRepository {
       'user-disabled' => 'Esta conta foi desativada.',
       'user-not-found' ||
       'wrong-password' ||
-      'invalid-credential' =>
-        'E-mail ou senha incorretos.',
+      'invalid-credential' => 'E-mail ou senha incorretos.',
       'email-already-in-use' => 'Este e-mail já está cadastrado.',
       'weak-password' => 'A senha precisa ter ao menos 6 caracteres.',
       'network-request-failed' => 'Falha de conexão. Tente novamente.',
