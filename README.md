@@ -107,9 +107,15 @@ código de binding atende a ambos (veja `lib/core/bindings/data_binding.dart`):
   compras usam o mesmo fallback de nível do DEMO (o RevenueCat é só para mobile):
 
   ```bash
-  flutter run --dart-define=REVENUECAT_API_KEY=goog_xxx        # Android/iOS
-  flutter run -d web-server --web-port 8080                    # web (sem chave necessária)
+  flutter run --dart-define=REVENUECAT_API_KEY=<TEST_STORE_KEY>   # Android/iOS
+  flutter run -d web-server --web-port 8080                       # web (sem chave necessária)
   ```
+
+  Para testar a compra de ponta a ponta sem conta Google Play / Apple, use a
+  **Test Store** do RevenueCat: ela é auto-provisionada, tem a sua própria chave
+  (`<TEST_STORE_KEY>`, sem prefixo `goog_`/`appl_`) e as compras **concluem de
+  verdade** — a entitlement "premium" é ativada via `CustomerInfo`. Produtos e
+  uma oferta "default" ligada à entitlement "premium" já existem no projeto.
 
 O SDK do RevenueCat só é configurado em builds **nativos** não-DEMO com uma chave
 não vazia; web/DEMO nunca o tocam.
