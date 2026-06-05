@@ -34,19 +34,19 @@ class ClubPage extends GetView<ClubController> {
           ),
           children: [
             _header(theme),
+            Obx(
+              () => controller.isMember
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: AppSpacing.md),
+                      child: _memberBadge(),
+                    )
+                  : const SizedBox.shrink(),
+            ),
             const SizedBox(height: AppSpacing.sect),
             Obx(() => _freeCard(theme)),
             const SizedBox(height: AppSpacing.gap),
             Obx(() => _paidCard(context, theme)),
-            const SizedBox(height: AppSpacing.sect),
-            Text(AppStrings.clubContentSection, style: theme.textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.gap),
-            ...controller.exclusiveContent.map(
-              (c) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.gap),
-                child: ClubContentCard(content: c),
-              ),
-            ),
+            Obx(() => _exclusiveSection(theme)),
           ],
         ),
       ),
@@ -63,8 +63,11 @@ class ClubPage extends GetView<ClubController> {
             color: AppColors.amberTint,
             borderRadius: AppRadii.brMd,
           ),
-          child: const Icon(Icons.workspace_premium,
-              color: AppColors.amberDeep, size: 32),
+          child: const Icon(
+            Icons.workspace_premium,
+            color: AppColors.amberDeep,
+            size: 32,
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
@@ -76,8 +79,9 @@ class ClubPage extends GetView<ClubController> {
         Text(
           AppStrings.clubSubtitle,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );
@@ -97,8 +101,10 @@ class ClubPage extends GetView<ClubController> {
           Row(
             children: [
               Expanded(
-                child: Text(AppStrings.clubFreeTier,
-                    style: theme.textTheme.titleLarge),
+                child: Text(
+                  AppStrings.clubFreeTier,
+                  style: theme.textTheme.titleLarge,
+                ),
               ),
               if (!controller.isMember)
                 Text(
@@ -178,6 +184,7 @@ class ClubPage extends GetView<ClubController> {
           ),
           const SizedBox(height: AppSpacing.lg),
           _cta(context, theme),
+          if (!controller.isMember) _restoreButton(context),
           const SizedBox(height: AppSpacing.md),
           Center(
             child: Text(
@@ -192,8 +199,9 @@ class ClubPage extends GetView<ClubController> {
 
   Widget _paidBadge() {
     final isMember = controller.isMember;
-    final label =
-        isMember ? AppStrings.clubCurrentPlan : AppStrings.clubRecommended;
+    final label = isMember
+        ? AppStrings.clubCurrentPlan
+        : AppStrings.clubRecommended;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -248,7 +256,9 @@ class ClubPage extends GetView<ClubController> {
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
-        onPressed: controller.isSubscribing ? null : () => _onSubscribe(context),
+        onPressed: controller.isSubscribing
+            ? null
+            : () => _onSubscribe(context),
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.amber,
           foregroundColor: AppColors.choco950,
@@ -265,9 +275,133 @@ class ClubPage extends GetView<ClubController> {
                 ),
               )
             : Text(
-                AppStrings.clubSubscribe,
+                controller.priceLabel != null
+                    ? '${AppStrings.clubSubscribe} · ${controller.priceLabel}'
+                    : AppStrings.clubSubscribe,
                 style: AppTypography.bodyBold(AppColors.choco950),
               ),
+      ),
+    );
+  }
+
+  /// "Assinante" pill shown under the header once the user is premium.
+  Widget _memberBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.greenSoft,
+        borderRadius: AppRadii.brPill,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.verified_rounded,
+            size: 16,
+            color: AppColors.greenDeep,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            AppStrings.clubMemberBadge,
+            style: AppTypography.overline(AppColors.greenDeep),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// "Restaurar compras" — recovers a prior purchase on a new device/reinstall.
+  Widget _restoreButton(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: controller.isRestoring ? null : () => _onRestore(context),
+        style: TextButton.styleFrom(foregroundColor: _cream),
+        child: controller.isRestoring
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(_cream),
+                ),
+              )
+            : Text(
+                AppStrings.clubRestore,
+                style: AppTypography.bodyBold(_cream),
+              ),
+      ),
+    );
+  }
+
+  Future<void> _onRestore(BuildContext context) async {
+    final restored = await controller.restore();
+    if (!context.mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    if (restored) {
+      messenger.showSnackBar(
+        const SnackBar(
+          backgroundColor: AppColors.choco900,
+          content: Text(AppStrings.clubRestored),
+        ),
+      );
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.choco900,
+          content: Text(controller.errorMessage ?? AppStrings.clubRestoreEmpty),
+        ),
+      );
+    }
+  }
+
+  /// Members-only "Do Clube" rail — gated: the curated cards are revealed once
+  /// premium, otherwise a locked teaser invites the user to subscribe.
+  Widget _exclusiveSection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: AppSpacing.sect),
+        Text(AppStrings.clubContentSection, style: theme.textTheme.titleLarge),
+        const SizedBox(height: AppSpacing.gap),
+        if (controller.isMember)
+          ...controller.exclusiveContent.map(
+            (c) => Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.gap),
+              child: ClubContentCard(content: c),
+            ),
+          )
+        else
+          _lockedContent(theme),
+      ],
+    );
+  }
+
+  Widget _lockedContent(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: AppRadii.brLg,
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.lock_outline_rounded,
+            color: AppColors.amberDeep,
+            size: 24,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              AppStrings.clubLockedHint,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -22,7 +22,13 @@ class ShellBinding extends Bindings {
       () => SearchTabController(Get.find(), Get.find()),
     );
     Get.lazyPut<ClubController>(
-      () => ClubController(Get.find(), Get.find()),
+      () => ClubController(
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+      ),
     );
     Get.lazyPut<ProfileController>(
       () => ProfileController(Get.find(), Get.find()),

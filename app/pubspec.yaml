@@ -47,6 +47,7 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_map: ^8.3.0
   latlong2: ^0.9.1
+  purchases_flutter: ^10.2.2
 
 dev_dependencies:
   flutter_test:

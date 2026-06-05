@@ -14,9 +14,9 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<Result<User>> getUserById(String uid) {
-    return guardFirestore(() async => _mapper.toEntity(
-          await _ds.fetchById(uid),
-        ));
+    return guardFirestore(
+      () async => _mapper.toEntity(await _ds.fetchById(uid)),
+    );
   }
 
   @override

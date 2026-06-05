@@ -11,10 +11,10 @@ class SignUpWithEmail implements UseCase<User, SignUpData> {
 
   @override
   Future<Result<User>> call(SignUpData params) => _repository.signUpWithEmail(
-        name: params.name,
-        email: params.email,
-        password: params.password,
-      );
+    name: params.name,
+    email: params.email,
+    password: params.password,
+  );
 }
 
 /// Registration details for a new account.

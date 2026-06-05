@@ -5,6 +5,7 @@ import 'package:app/domain/entities/producer.dart';
 import 'package:app/domain/entities/product.dart';
 import 'package:app/domain/entities/product_query.dart';
 import 'package:app/domain/entities/origin_lot.dart';
+import 'package:app/domain/entities/purchase_package.dart';
 import 'package:app/domain/entities/review.dart';
 import 'package:app/domain/entities/subscription.dart';
 import 'package:app/domain/entities/user.dart';
@@ -12,6 +13,7 @@ import 'package:app/domain/repositories/auth_repository.dart';
 import 'package:app/domain/repositories/origin_lot_repository.dart';
 import 'package:app/domain/repositories/producer_repository.dart';
 import 'package:app/domain/repositories/product_repository.dart';
+import 'package:app/domain/repositories/purchases_repository.dart';
 import 'package:app/domain/repositories/review_repository.dart';
 import 'package:app/domain/repositories/subscription_repository.dart';
 import 'package:app/domain/repositories/user_repository.dart';
@@ -179,6 +181,45 @@ class FakeAuthRepository implements AuthRepository {
     didSignOut = true;
     return signOutResult;
   }
+}
+
+class FakePurchasesRepository implements PurchasesRepository {
+  Result<List<PurchasePackage>> offeringsResult = success(const [
+    PurchasePackage(id: 'premium', title: 'Clube Premium', priceString: 'R\$ 9,90'),
+  ]);
+  Result<bool> purchaseResult = success(true);
+  Result<bool> restoreResult = success(false);
+  Result<bool> premiumResult = success(false);
+
+  bool purchaseCalled = false;
+  bool restoreCalled = false;
+  String? lastUserId;
+  PurchasePackage? lastPackage;
+
+  @override
+  Future<Result<List<PurchasePackage>>> getOfferings() async => offeringsResult;
+
+  @override
+  Future<Result<bool>> purchase({
+    required String userId,
+    required PurchasePackage package,
+  }) async {
+    purchaseCalled = true;
+    lastUserId = userId;
+    lastPackage = package;
+    return purchaseResult;
+  }
+
+  @override
+  Future<Result<bool>> restorePurchases({required String userId}) async {
+    restoreCalled = true;
+    lastUserId = userId;
+    return restoreResult;
+  }
+
+  @override
+  Future<Result<bool>> isPremium({required String userId}) async =>
+      premiumResult;
 }
 
 class FakeSubscriptionRepository implements SubscriptionRepository {

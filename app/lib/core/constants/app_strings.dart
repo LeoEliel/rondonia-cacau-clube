@@ -105,6 +105,14 @@ abstract final class AppStrings {
       'Não foi possível assinar agora. Tente novamente.';
   static const String clubExclusive = 'Exclusivo';
   static const String clubContentSection = 'Do Clube';
+  static const String clubMemberBadge = 'Assinante';
+  static const String clubRestore = 'Restaurar compras';
+  static const String clubRestoreEmpty =
+      'Nenhuma compra encontrada para restaurar.';
+  static const String clubRestored = 'Compras restauradas. Bem-vindo de volta!';
+  static const String clubLockedHint =
+      'Assine o Clube para desbloquear histórias, receitas e lançamentos '
+      'exclusivos da floresta.';
 
   // Cocoa Club — free benefits
   static const String clubFreeBenefit1 = 'Explorar o catálogo e a origem';

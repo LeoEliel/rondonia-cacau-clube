@@ -9,11 +9,8 @@ class FollowProducer implements UseCase<Unit, FollowProducerParams> {
   final UserRepository _repository;
 
   @override
-  Future<Result<Unit>> call(FollowProducerParams params) =>
-      _repository.followProducer(
-        uid: params.uid,
-        producerId: params.producerId,
-      );
+  Future<Result<Unit>> call(FollowProducerParams params) => _repository
+      .followProducer(uid: params.uid, producerId: params.producerId);
 }
 
 /// Input for [FollowProducer] / [UnfollowProducer].

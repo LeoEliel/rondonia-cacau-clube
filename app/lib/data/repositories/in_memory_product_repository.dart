@@ -23,20 +23,22 @@ class InMemoryProductRepository implements ProductRepository {
       items = items.where((p) => p.producerId == query.producerId).toList();
     }
     if (query.category != null) {
-      items =
-          items.where((p) => p.byproductCategory == query.category).toList();
+      items = items
+          .where((p) => p.byproductCategory == query.category)
+          .toList();
     }
     if (query.seals.isNotEmpty) {
       final seals = query.seals.toSet();
-      items =
-          items.where((p) => p.qualitySeals.any(seals.contains)).toList();
+      items = items.where((p) => p.qualitySeals.any(seals.contains)).toList();
     }
     final text = query.text?.trim().toLowerCase();
     if (text != null && text.isNotEmpty) {
       items = items
-          .where((p) =>
-              p.name.toLowerCase().contains(text) ||
-              p.description.toLowerCase().contains(text))
+          .where(
+            (p) =>
+                p.name.toLowerCase().contains(text) ||
+                p.description.toLowerCase().contains(text),
+          )
           .toList();
     }
 
@@ -63,9 +65,8 @@ class InMemoryProductRepository implements ProductRepository {
 
   @override
   Future<Result<List<Product>>> getProductsByProducer(String producerId) async {
-    final items =
-        _all.where((p) => p.producerId == producerId).toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final items = _all.where((p) => p.producerId == producerId).toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return success(items);
   }
 }
