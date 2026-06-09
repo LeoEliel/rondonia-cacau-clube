@@ -13,6 +13,8 @@ Este protótipo **não tem recursos de IA e não usa chaves de API de terceiros*
 
 O projeto Flutter fica em [`app/`](app/).
 
+## **[Vídeo de demonstração aqui](https://youtu.be/jzy31d2sJ5o)**
+
 ---
 
 ## Stack tecnológica
